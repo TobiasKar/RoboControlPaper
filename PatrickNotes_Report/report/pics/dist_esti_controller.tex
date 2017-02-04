@@ -1,0 +1,44 @@
+\begin{tikzpicture}[M/.style={draw,outer sep=0pt,thick}, gain/.style={
+	draw,
+	shape border rotate=0,
+	regular polygon,
+	regular polygon sides=3,
+	%node distance=1cm,
+	%minimum height=1cm
+}]
+
+	\node [gain,thick, shape border rotate=-90] (inertia) at (0,0) {$\bar{M}_{ii}$};
+	\node [M, circle] (add1) at ($(inertia.east) + (1,0)$) {};
+	\node [M, circle] (add2) at ($(inertia.west) + (-2,0)$) {};
+
+	\node [M,thick,minimum width=1cm,minimum height=1cm] (integ) at ($(inertia.south) + (0, -2)$) {$\dfrac{1}{s}$};
+	\node [M, circle] (add3) at ($(add1 |- integ)$) {};
+	\node [gain, thick] (gain1) at ($(add1)!0.55!(add3)$) {$l_i$};
+	\node at ($(add3.south east) + (0.2, -0.2)$) {$-$};
+	\node [M, circle] at ($(add2.west) + (-1,1.5)$) (add4) {};
+	\node [M, circle] at ($(add2.west) + (-1,-1.5)$) (add5) {};
+	\node at ($(add4.south east) + (0.2, -0.2)$) {$-$};
+	\node at ($(add5.south east) + (0.2, -0.2)$) {$-$};
+	
+	\draw [-latex, thick] (inertia.east) -- (add1.west);
+	\draw [-latex, thick] (integ.east) -- (add3.west);
+	\draw [-latex, thick] (add3.north) -- (gain1.south);
+	\draw [-latex, thick] (gain1.north) -- (add1.south);
+	\draw [-latex, thick] (add2.east) -- (inertia.west);
+	\draw [-latex, thick] ($(add2.east)!0.5!(inertia.west)$) |- (integ.west);
+	\draw [-latex, thick] (add1.east) -- node [above,midway] {$\tau_{c,i}$} ($(add1.east)+(1,0)$);
+	\draw [-latex, thick] ($(add2.west)+(-3, 0)$) node [above] {$\ddot{q}_{D,i}$} -- (add2.west);
+	\draw [-latex, thick] (add4.east) -| (add2.north);
+	\draw [-latex, thick] (add5.east) -| (add2.south);
+	\draw [-latex, thick] ($(add4.north)+(-2,0.5)$) node [above] {$q_{D,i}$} -| (add4.north);
+	\draw [-latex, thick] ($(add4.south)+(-2,-0.5)$) node [above] {$q_{i}$} -| (add4.south);
+	\draw [-latex, thick] ($(add5.north)+(-2,0.5)$) node [above] {$\dot{q}_{D,i}$} -| (add5.north);
+	\draw [-latex, thick] ($(add5.south)+(-2,-0.5)$) node [above] {$\dot{q}_{i}$} -| (add5.south); 
+	
+	\draw [-latex, thick] ($(add5.south)+(-1,-0.5)$) -- ($(add5.south)+(-1,-2)$) -| (add3.south);
+	
+	\fill ($(add2.east)!0.5!(inertia.west)$) circle [radius=1.5pt];
+	\fill ($(add5.south)+(-1,-0.5)$) circle [radius=1.5pt];
+	\node [above] at ($(add2.east)!0.5!(inertia.west)$) {$\ddot{q}_{calc,i}$};
+	
+\end{tikzpicture}

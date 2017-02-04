@@ -1,0 +1,125 @@
+\chapter{Properties of robot}
+\section{Planar robot with 2 degrees of freedom}
+The first task is to derive the equation of motion for a 2 \ac{DOF} planar robot using Lagrange formalism. The schematic of such a robot is shown in Figure \ref{fig:planar_robot_schematic}. This robot consists of two drives, connected by links which have the mass at the tip of them.
+\begin{figure}[H]
+	\centering
+	\input{pics/planar_robot_schematic.tex}
+	\caption{Schematic of a planar robot with 2 degrees of freedom}
+	\label{fig:planar_robot_schematic}
+\end{figure}
+The generalised coordinates of the system are the angles $\theta_1$ and $\theta_2$, afterwards denoted by $q_1$ and $q_2$ respectively. As the masses are assumed to be point masses, the according position vectors can be used to derive the kinetic and the potential energy. The position and velocity vectors are given by:
+\begin{align*}
+	\mathbf{r}_1 = \left(\begin{array}{c}
+	a_1\cos(q_1)\\
+	a_1\sin(q_1)
+	\end{array}\right) && \mathbf{r}_2 = \left(\begin{array}{c}
+	a_1\cos(q_1) + a_2\cos(q_1+q_2)\\
+	a_1\sin(q_1) + a_2\sin(q_1+q_2)
+	\end{array}\right)\\
+	\dot{\mathbf{r}}_1 = \left(\begin{array}{c}
+	-a_1\sin(q_1)\dot{q}_1\\
+	a_1\cos(q_1)\dot{q}_1
+	\end{array}\right) && \dot{\mathbf{r}}_2 = \left(\begin{array}{c}
+	-a_1\sin(q_1)\dot{q}_1 - a_2\sin(q_1+q_2)(\dot{q}_1 + \dot{q}_2)\\
+	a_1\cos(q_1)\dot{q}_1 + a_2\cos(q_1+q_2)(\dot{q}_1 + \dot{q}_2)
+	\end{array}\right)
+\end{align*}
+The kinetic energy $T$ of the robot arm is described by the following equation:
+\begin{align}
+	T =& \frac{m_1}{2}\dot{\mathbf{r}}_1^T\dot{\mathbf{r}}_1 + \frac{m_2}{2}\dot{\mathbf{r}}_2^T\dot{\mathbf{r}}_2\nonumber\\
+	=& \frac{a_1^2 (m_1 + m_2) + a_2^2 m_2}{2} \dot{q}_1^2 + \frac{a_2^2 m_2}{2} \dot{q}_2 + a_2m_2(a_2\dot{q}_2 + a_1\cos(q_2)\dot{q}_1 + a_1\cos(q_2)\dot{q}_2)\dot{q}_1
+	\label{eq:ch1_kinetic}
+\end{align}
+The potential energy $V$ is given by:
+\begin{equation}
+	V = m_1 g y_1 + m_2 g y_2 = a_1 m_1 g \sin(q_1) + m_2 g (a_1 \sin(q_1) + a_2 \sin (q_1 + q_2))
+	\label{eq:ch1_potential}
+\end{equation}
+The Lagrangian $L$, which is needed for the Lagrange formalism, is defined as the difference of the kinetic energy $T$ and the potential energy $V$:
+\begin{equation}
+	L = T - V
+	\label{eq:ch1_lagrangian}
+\end{equation}
+\newpage
+The Lagrange formalism is given by the following equation:
+\begin{gather}
+	\frac{d}{dt}\left(\frac{\partial L}{\partial \dot{q}_k}\right) - \frac{\partial L}{\partial q_k} = Q_k
+	\label{eq:ch1_lagform}
+	\intertext{where:}
+	\begin{tabular}{>{$}l<{$} @{${}:{}$} l}
+	q_k & k\textsuperscript{th} generalised coordinate\\
+	\dot{q}_k & k\textsuperscript{th} generalised velocity\\
+	Q_k & k\textsuperscript{th} generalised force
+	\end{tabular}\nonumber
+\end{gather}
+Inserting Equations \ref{eq:ch1_kinetic} and \ref{eq:ch1_potential} into \ref{eq:ch1_lagrangian} and applying the result on \ref{eq:ch1_lagform}, results in the differential equations, which describe the movement of the planar robot. The resulting system description has the following form:
+\begin{gather}
+\mathbf{\tau} = \mathbf{M}(\mathbf{q})\mathbf{\ddot{q}} + \mathbf{v}(\mathbf{q}, \mathbf{\dot{q}}) + \mathbf{g}(\mathbf{q}) + \mathbf{\tau}_D
+\label{eq:ch1_robotdynamics}
+\intertext{where:}
+\begin{tabular}{>{$}l<{$} @{${}={}$} l}
+	\mathbf{\tau} & input torque vector \\
+	\mathbf{M}(\mathbf{q}) & inertia matrix\\
+	\mathbf{v}(\mathbf{q}, \mathbf{\dot{q}}) & centrifugal/corriolis vector\\
+	\mathbf{g}(\mathbf{q}) & gravitation vector\\
+	\mathbf{\tau}_D & disturbance vector
+\end{tabular}\nonumber
+\end{gather}
+Often, the term $\mathbf{v}(\mathbf{q}, \mathbf{\dot{q}}) + \mathbf{g}(\mathbf{q})$ is gathered and denoted by $\mathbf{n}(\mathbf{q}, \mathbf{\dot{q}})$. The result of the calculation is given by:
+\begin{align*}
+	\tau &= \input{equations/planar_robot_M}\left(\begin{array}{c}
+	\ddot{q}_1\\ \ddot{q}_2
+	\end{array}\right) \\
+	 &+ \input{equations/planar_robot_V}\\
+	 &+ \input{equations/planar_robot_G}
+\end{align*}
+In this result the disturbance vector $\tau_D$ was set to zero, because it is unknown.\\
+As a next step, the direct kinematics and the Jacobian matrix have to be found. The direct kinematic was already calculated in the beginning and is denoted by $\mathbf{r}_2$:
+\begin{equation*}
+	\mathbf{r}_2 = \left(\begin{array}{c}
+	a_1\cos(q_1) + a_2\cos(q_1+q_2)\\
+	a_1\sin(q_1) + a_2\sin(q_1+q_2)
+	\end{array}\right)
+\end{equation*}
+The Jacobian is the partial derivative of the position vector with respect to the generalised coordinates:
+\begin{equation*}
+	\mathbf{J}(\mathbf{q}) = \frac{\partial \mathbf{r}_2}{\partial \mathbf{q}} = \input{equations/planar_robot_jacobian}
+\end{equation*}
+For all further considerations, the following state vector is introduced:
+\begin{equation*}
+	\mathbf{x}=\left(\begin{array}{c}
+q_1\\ q_2 \\ \dot{q}_1 \\ \dot{q}_2
+\end{array}\right)
+\end{equation*}
+The next step is to check the plausibility of the equations of motion by simulation.
+\section{Simulation of robot dynamics}
+To check, if the previously derived dynamic equations are plausible, some simulations are done. For these simulations, the following values are used for the parameters:
+\begin{align*}
+	m_1 = m_2 &= 1\,\mathrm{kg}\\
+	a_1 = a_2 &= 1\,\mathrm{m}\\
+	g &= 9.81\,\mathrm{\frac{m}{s^2}}
+\end{align*}As a first simulation, the stable, downright equilibrium point is used as initial condition. The expected result is, that no movement occurs, as the system always stays in its equilibrium. For the next simulation, the unstable, upper equilibrium is used. Again, no movement is to be expected, as the initial condition is again an equilibrium point and no external force is applied. As a last simulation, an initial condition of $\mathbf{x}_0 =\left( \begin{array}{cccc}
+	0 & 0 & 0 & 0
+\end{array}\right)^T$ is used. The expected result is some kind of chaotic oscillation of both joints.\\
+Figure \ref{fig:ch1_model1} shows the results of the simulation with the stable equilibrium point as initial condition. As expected, the position remains zero for the whole simulation. The small values of the velocities, somewhere around $10^{-14}$, are caused by numerical errors.
+\begin{figure}[H]
+	\centering
+	\input{pics/planar_robot_model1.tex}
+	\caption{Verification of the model with \usebox{\modeli}}
+	\label{fig:ch1_model1}
+\end{figure}
+Figure \ref{fig:ch1_model2} shows the simulation results where both joints start at the upper equilibrium point. Until approximately $7\,\mathrm{s}$, no movement can be seen. Then suddenly, both joints fall and start to oscillate chaotic afterwards. This result is also caused by numerical errors. As the error is integrated, it increases with every calculation step and eventually results in the seen behaviour.
+\begin{figure}[H]
+	\centering
+	\input{pics/planar_robot_model2.tex}
+	\caption{Verification of the model with \usebox{\modelii}}
+	\label{fig:ch1_model2}
+\end{figure}
+The result for the simulation with all initial conditions set to zero is seen in Figure \ref{fig:ch1_model3}. As expected, both joints oscillate in a chaotic behaviour. This oscillation continues, as no friction was implemented in the derived model.
+\begin{figure}[H]
+	\centering
+	\input{pics/planar_robot_model3.tex}
+	\caption{Verification of the model with \usebox{\modeliii}}
+	\label{fig:ch1_model3}
+\end{figure}
+As the simulation results fit with the expectations, the derived dynamic model can be seen as correct. The next step is to design a controller for the motion of the robot.

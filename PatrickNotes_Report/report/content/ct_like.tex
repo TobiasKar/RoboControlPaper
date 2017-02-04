@@ -1,0 +1,158 @@
+\chapter{Computed torque like controllers}
+The \ac{CT} like controllers are a derivation of the original \ac{CT} controller. For the \ac{CT} control law, it is assumed that the dynamic model of the system is completely known. This is almost never the case on a real robot, because of some dynamic components, which are hard to model, like friction. Therefore, the \ac{CT} control law is changed from the perfect robot model to the estimated model. In this chapter, first a PD controller with gravity compensation will be explained and afterwards two different types of classical, decoupled joint control are shown.
+\section{PD controller with gravity compensation}
+For this \ac{CT} like controller, the moment of inertia and the centrifugal/coriolis terms are neglected and only the gravitational part is considered. This results in a much simpler control law, which still offers good results for $\mathbf{\dot{q}}(t) = 0$. This is, because in steady state only the gravitation has an influence on the behaviour of the system. For the stabilisation of the system, the outer loop still contains a PD controller. The overall control law for the PD controller with gravity compensation is given by:
+\begin{equation*}
+	\tau_c = -\mathbf{u} + \mathbf{g}(\mathbf{q})
+\end{equation*}
+The schematic for this control structure is shown in Figure \ref{fig:ch3_pd_grav}. The inner feedforward loop only contains the gravitation compensation, while the outer loop still implements the linear control law $\mathbf{u}$.
+\begin{figure}[H]
+	\centering
+	\input{pics/pd_grav_control_loop.tex}
+	\caption{Control loop for the PD controller with gravity compensation}
+	\label{fig:ch3_pd_grav}
+\end{figure}
+For the design of the PD controller, again the general second order polynomial is used. This means, the controller parameters can be chosen by setting $\zeta$ and $\omega_n$. Again, critical damping is used, so $\zeta = 1$. To show the influence of the parameter $\omega_n$, two different values are used. The first simulation is done with $\omega_n = 100\,\mathrm{\frac{rad}{s}}$, while for the second $\omega_n = 10\,\mathrm{\frac{rad}{s}}$ is used.\\
+Figure \ref{fig:ch3_sim11} shows the simulation with $\omega_n = 100\,\mathrm{\frac{rad}{s}}$. It can be seen, that the position error of the closed loop system is somewhere around $0.1\cdot10^{-3}\,\mathrm{rad}$. Also, the system is already settled after approximately $0.2\,\mathrm{s}$. On the other hand, the initial torque of the second joint is approximately $1\,\mathrm{kN\,m}$. After the system is settled, the torque for the first joint oscillates from $24\,\mathrm{N\,m}$ up to $35\,\mathrm{N\,m}$ and for the second joint it ranges from $7.5\,\mathrm{N\,m}$ to $12\,\mathrm{N\,m}$.
+\begin{figure}[H]
+	\centering
+	\input{pics/pd_grav1.tex}
+	\caption{Simulation results of PD controller with gravity compensation and $\omega_n = 100\,\mathrm{\frac{rad}{s}}$}
+	\label{fig:ch3_sim11}
+\end{figure}
+Figure \ref{fig:ch3_sim12} show the results of the simulation with the PD controller with gravity compensation with $\omega_n =  10\,\mathrm{\frac{rad}{s}}$. Compared to the previous simulation, the position error is much higher, as it has an oscillation with an amplitude of $60\cdot10^{-3}\,\mathrm{rad}$ at the first joint and an oscillation with an amplitude of $25\cdot10^{-3}\,\mathrm{rad}$ at the second joint. Also, the system takes approximately $1\,\mathrm{s}$ to settle. The initial torque, which is applied to the joints, is much lower than in the previous simulation. The second joint has a short peak of approximately $20\,\mathrm{N\,m}$, which is much more realistic. After the system is settled, the oscillation of the first joint ranges from $21\,\mathrm{N\,m}$ to $38\,\mathrm{N\,m}$ and for the second joint it ranges from $6.5\,\mathrm{N\,m}$ up to $13\,\mathrm{N\,m}$.\\
+These simulations show, that even if $\mathbf{\dot{q}} \neq 0$ the results of the controller are quite good, if the parameters of the PD controller are high enough. On the other hand, increasing the gains can lead to actuator saturation, which is also not wanted. Therefore, on a real robot, a compromise which fulfils the needed requirements has to be made.\\
+The next section describes the decoupled control of the two joints with a standard PD/PID controller.
+\begin{figure}[H]
+	\centering
+	\input{pics/pd_grav2.tex}
+	\caption{Simulation results of PD controller with gravity compensation and $\omega_n = 10\,\mathrm{\frac{rad}{s}}$}
+	\label{fig:ch3_sim12}
+\end{figure}
+\section{Classical joint control}
+In the classical joint control, even more simplifications are made. While the PD controller with gravity compensation still included the gravitational part, this controller does not cover any nonlinearities of the system and simply implements the linear control law. This means, the control law only includes the linear part $\mathbf{u}$:
+\begin{equation*}
+	\tau_c = -\mathbf{u}
+\end{equation*}
+Therefore, this controller results in one decoupled control law per joint. This method works pretty good for motors with very high gear ratio, as higher gear ratio decrease the influence of the nonlinear effects and reduces the control problem to the control of the drives. The model of the joints is then simplified to:
+\begin{gather}
+J_i\ddot{q}_i + B_i\dot{q}_i = u_i - \frac{1}{N_i}\tau_{D,i}
+\label{eq:ch3_system}
+\intertext{where:}
+\begin{tabular}{>{$}l<{$} @{${}:{}$} l}
+J_i & moment of inertia of $i^{th}$ joint\\
+B_i & viscous friction coefficient\\
+N_i & gear ratio
+\end{tabular}\nonumber
+\end{gather}
+In this section, first a PD controller is applied for both joints and afterwards a PID controller is used.
+\subsection{PD control}
+For the design of the PD controller, the general second order polynomial is used. Again, critical damping is used for the controller design. The control law for the $i^{th}$ joint is:
+\begin{equation*}
+	u_i = k_{d,i} \dot{e}_i + k_{p,i} e_i
+\end{equation*} To show the influence of the frequency $\omega_n$, three simulations with different values are performed. Table \ref{tab:ch3_pd} summarises the controller parameters and the according figures. Both joints use the same controller parameters.
+\begin{table}[H]
+	\begin{center}
+		\caption{Controller parameters for simulations witch classical PD controller}
+		\label{tab:ch3_pd}
+		\begin{tabular}{llll}
+			& & & According \\
+			& $k_{p,i}$ & $k_{d,i}$ & Figure \\
+			\midrule
+			$\omega_n = 10\,\mathrm{\frac{rad}{s}}$: & 100 & 20 & \ref{fig:ch3_sim21} \\
+			$\omega_n = 25\,\mathrm{\frac{rad}{s}}$: & 625 & 50 & \ref{fig:ch3_sim22} \\
+			$\omega_n = 50\,\mathrm{\frac{rad}{s}}$: & 2500 & 100 & \ref{fig:ch3_sim23} \\
+			\bottomrule
+		\end{tabular}
+	\end{center}
+\end{table}
+In Figure \ref{fig:ch3_sim21}, the results of the simulation with the classical PD controller with $\omega_n = 10\,\mathrm{\frac{rad}{s}}$ can be seen. The position error, when using this controller, is very high, with an approximate average of $0.3\,\mathrm{rad}$ for the first joint and $0.1\,\mathrm{rad}$ for the second joint. This high offset is caused by the gravitation, which was neglected in the controller design. The applied torque has no high peak at the beginning and an oscillation from $21\,\mathrm{N\,m}$ up to $34\,\mathrm{N\,m}$ for the first joint and ranges from $7\,\mathrm{N\,m}$ to $11\,\mathrm{N\,m}$ for the second joint.
+\begin{figure}[H]
+	\centering
+	\input{pics/classic_pd1.tex}
+	\caption{Simulation results of classical PD controller with $\omega_n = 10\,\mathrm{\frac{rad}{s}}$}
+	\label{fig:ch3_sim21}
+\end{figure}
+Figure \ref{fig:ch3_sim22} shows the simulation results for the decoupled PD controller with $\omega_n = 25\,\mathrm{\frac{rad}{s}}$. Compared to the previous results, with the lower gains, the position error is smaller with an average value of $0.05\,\mathrm{rad}$ for the first joint and $0.19\,\mathrm{rad}$ for the second joint. The amplitude of the velocity error is also smaller than in the previous simulation. On the other hand, the initial torque already shows a high peak of approximately $60\,\mathrm{N\,m}$. After the system is settled, the amplitudes of the torque are similar to the previous simulation.
+\begin{figure}[H]
+	\centering
+	\input{pics/classic_pd2.tex}
+	\caption{Simulation results of classical PD controller with $\omega_n = 25\,\mathrm{\frac{rad}{s}}$}
+	\label{fig:ch3_sim22}
+\end{figure}
+The simulation results for the high gains, with $\omega_n = 50\,\mathrm{\frac{rad}{s}}$, can be seen in Figure \ref{fig:ch3_sim23}. The position and velocity errors are even smaller than in the simulation with $\omega_n = 25\,\mathrm{\frac{rad}{s}}$. The average position error is decreased to $0.01\,\mathrm{rad}$ for the first joint and to $0.003\,\mathrm{rad}$ for the second joint. On the other hand, the initial torque peak is much higher with an approximate value of $250\,\mathrm{N\,m}$.\\
+The next step is to implement an integrating part into this classical joint controller, to remove the steady state error, which is caused by the gravitation.
+\begin{figure}[H]
+	\centering
+	\input{pics/classic_pd3.tex}
+	\caption{Simulation results of classical PD controller with $\omega_n = 50\,\mathrm{\frac{rad}{s}}$}
+	\label{fig:ch3_sim23}
+\end{figure}
+\subsection{PID control}
+To remove the steady state error, which existed when using the PD controller, an integrating part is included into the controller. The control law for the $i^{th}$ joint is now:
+\begin{equation*}
+	u_i = k_{d,i} \dot{e}_i + k_{p,i} e_i + k_{i,i} \varepsilon_i
+\end{equation*}
+Inserting this controller in the equation of the linear system, as seen in Equation \ref{eq:ch3_system}, results in:
+\begin{align*}
+	J_i\ddot{q}_i + B_i\dot{q}_i &= k_{d,i} \dot{e}_i + k_{p,i} e_i + k_{i,i} \varepsilon_i - \frac{1}{N}\tau_{D,i}\\
+	&= k_{d,i} (\dot{q}_{D,i} - \dot{q}_i) + k_{p,i} (q_{D,i} - q_i) + k_{i,i} \int(q_{D,i} - q_i)dt - \frac{1}{N}\tau_{D,i}\\
+	\Rightarrow & J_i\ddot{q}_i + (B_i + k_{d,i}) \dot{q}_i + k_{p,i} q_i + k_{i,i} \int q_i\,dt = k_{d,i} \dot{q}_{D,i} + k_{p,i} q_{D,i} + k_{i,i} \int q_{D,i}\, dt - \frac{1}{N}\tau_{D,i}
+\end{align*}
+The characteristic polynomial of this differential equation is:
+\begin{equation*}
+	\Delta(s) = J_i s^3 + (B_i + k_{d,i}) s^2 +  k_{p,i} s + k_{i,i}
+\end{equation*}
+To find the stability region for the controller parameters, the Routh-Hurwitz stability criterion is applied.
+\begin{gather*}
+\begin{tabular}{>{$}c<{$}>{$}c<{$}>{$}c<{$}}
+J_i & k_{p,i} & 0 \\
+B_i + k_{d,i} & k_{i,i} & 0\\
+\dfrac{(B_i + k_{d,i})k_{p,i}-J_i k_{i,i}}{B_i + k_{d,i}} & 0 & 0\\
+k_{i,i} & 0 & 0
+\end{tabular}
+\end{gather*}
+As a moment of inertia is always positive, $J_i > 0$, the following conditions have to be fulfilled such that there is no change in sign of the first column, which implies that the closed loop system is stable:
+\begin{align*}
+	B_i + k_{d,i} &> 0\\
+	k_{i,i} &> 0\\
+	(B_i + k_{d,i})\frac{k_{p,i}}{J_i} &> k_{i,i}
+\end{align*}
+Again, the controller parameters for both joints are chosen to be the same. The parameter $k_{i,i}$ is set to 1000. For the calculation of the other two controller parameters, the general second order polynomial is enhanced by a third, stable pole. Two simulations are made to show the influence of the frequency $\omega_n$ and in a third simulation, the influence of an actuator saturation is analysed. In Table \ref{tab:ch3_pid}, the controller parameters and the used saturation for the different simulations are summarised.
+\begin{table}[H]
+	\begin{center}
+		\caption{Controller parameters for simulations witch classical PID controller}
+		\label{tab:ch3_pid}
+		\begin{tabular}{lllll}
+			& & & & According \\
+			& $k_{p,i}$ & $k_{d,i}$ & saturation & Figure \\
+			\midrule
+			$\omega_n = 10\,\mathrm{\frac{rad}{s}}$: & 300 & 30 & $\pm\infty\,\mathrm{N\,m}$ & \ref{fig:ch3_sim31} \\
+			$\omega_n = 50\,\mathrm{\frac{rad}{s}}$: & 2540 & 100.4 & $\pm\infty\,\mathrm{N\,m}$ & \ref{fig:ch3_sim32} \\
+			$\omega_n = 50\,\mathrm{\frac{rad}{s}}$: & 2540 & 100.4 & $\pm 35\,\mathrm{N\,m}$ &  \ref{fig:ch3_sim33}\\
+			\bottomrule
+		\end{tabular}
+	\end{center}
+\end{table}
+Figure \ref{fig:ch3_sim31} shows the simulation results for the classic PID controller with $\omega_n = 10\,\mathrm{\frac{rad}{s}}$. It can be seen, that the position error has no more offset and oscillates around zero for both joints. The amplitude of the oscillations is $0.02\,\mathrm{rad}$ for the first joint and $0.01\,\mathrm{rad}$ for the second joint. The peak torque of the first joint is $44\,\mathrm{N\,m}$ and for the second joint it is $30\,\mathrm{N\,m}$.
+\begin{figure}[H]
+	\centering
+	\input{pics/classic_pid1.tex}
+	\caption{Simulation results of classical PID controller with $\omega_n = 10\,\mathrm{\frac{rad}{s}}$}
+	\label{fig:ch3_sim31}
+\end{figure}
+Figure \ref{fig:ch3_sim32} shows the simulation results for PID controller with $\omega_n = 50\,\mathrm{\frac{rad}{s}}$. With the higher parameters, the position error has a much smaller amplitude with $0.002\,\mathrm{rad}$ for the first joint and less than $0.001\,\mathrm{rad}$ for the second joint. On the other hand, the initial torque is very high, with a peak of approximately $250\,\mathrm{N\,m}$.\\
+In Figure \ref{fig:ch3_sim33}, the simulation with the actuator saturation of $\pm 35\,\mathrm{N\,m}$ can be seen. The influence of the saturation can be seen during the first $0.7\,\mathrm{s}$. The torque, which is applied to the first joint, is saturated during this time slot. Afterwards, the torque does not reach the saturation limit anymore. The position error during the settling process is also higher, when compared to the simulation with no saturation. After the system is settled, it behaves similar to the system with no saturation.\\
+These simulation conclude the \ac{CT} like controllers. The next chapter describes one of the problem that arises, when implementing a \ac{CT} controller on a real system.
+\begin{figure}[H]
+	\centering
+	\input{pics/classic_pid2.tex}
+	\caption{Simulation results of classical PID controller with $\omega_n = 50\,\mathrm{\frac{rad}{s}}$}
+	\label{fig:ch3_sim32}
+\end{figure}
+\begin{figure}[H]
+	\centering
+	\input{pics/classic_pid3.tex}
+	\caption{Simulation results of classical PID controller with $\omega_n = 50\,\mathrm{\frac{rad}{s}}$ and torque saturation}
+	\label{fig:ch3_sim33}
+\end{figure}

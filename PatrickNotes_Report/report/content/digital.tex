@@ -1,0 +1,38 @@
+\chapter{Practical issues at the realisation of robot control}
+When implementing a \ac{CT} controller, often a digital realisation of the controller is needed. For the design of a digital controller, the robot dynamics need to be discretised. This results in very complex dynamic equations for which the design of a controller is complicated. Also the discretisation of an existing controller cannot be applied to a \ac{CT} controller, as this type of controller is a nonlinear one. Therefore, the transformation is done by approximation. This means, the continuous control law of the \ac{CT} controller is used as its discrete equivalent. To show the influence of the used sampling time, some simulations are made. As controller, the \ac{CT} controller with the PD controller in the outer loop is used, as already shown in section \ref{sec:ch2_1}. The controller parameters are set to $k_{p,i} = 100$ and $k_{d,i} = 20$. For the simulations, only the sampling time of the controller is changed, so that the simulated robot still used variable step size. In this way, it can still be seen as an continuous system. If the controller would be implemented on a real robot, this system would also be a continuous one. Therefore, the results obtained in this way of simulation are more realistic.\\
+For the implementation of the discrete \ac{CT} controller, different sampling times are used. The first simulation uses a sampling time of $T_s = 1\,\mathrm{ms}$, the second a sampling time of $T_s = 50\,\mathrm{ms}$ and the third uses $T_s = 100\,\mathrm{ms}$.\\
+Figure \ref{fig:ch4_sim1} shows the results of the simulation with a settling time of $T_s = 1\,\mathrm{ms}$. With this sampling time, the results are very similar to the original result, with the continuous control law, as it can be seen in Figure \ref{fig:ch2_sim1}.
+\begin{figure}[H]
+	\centering
+	\input{pics/ct_pd1_digi.tex}
+	\caption{Simulation results of CT PD controller with a sampling time $T_s = 1\,\mathrm{ms}$}
+	\label{fig:ch4_sim1}
+\end{figure}
+Figure \ref{fig:ch4_sim3} shows the simulation results with a controller sampling time of $T_s = 50\,\mathrm{ms}$. In the bottom left plot, which shows the position error, a small oscillation can be seen. This is caused by the quite high sampling time. For higher sampling times, this effect increases.
+%\begin{figure}[H]
+%	\centering
+%	\input{pics/ct_pd2_digi.tex}
+%	\caption{Simulation results of CT PD controller with a sampling time $T_s = 10\,\mathrm{s}$}
+%	\label{fig:ch4_sim2}
+%\end{figure}
+\begin{figure}[H]
+	\centering
+	\input{pics/ct_pd3_digi.tex}
+	\caption{Simulation results of CT PD controller with a sampling time $T_s = 50\,\mathrm{ms}$}
+	\label{fig:ch4_sim3}
+\end{figure}
+In Figure \ref{fig:ch4_sim5}, the results of the simulation with a sampling time of $T_s = 100\,\mathrm{ms}$ is shown. With this sampling time, the oscillation of the position error has already an increasing amplitude, which means, the closed loop system is already unstable. The problem is, that the controller only calculates the needed torque every $0.1\,\mathrm{s}$. In this time, the robot has already moved further, as it would need to, therefore, the controller changes the sign of the torque. This means, the controller is to slow to control the robot, which causes unstable behaviour.
+%\begin{figure}[H]
+%	\centering
+%	\input{pics/ct_pd4_digi.tex}
+%	\caption{Simulation results of CT PD controller with a sampling time $T_s = 70\,\mathrm{s}$}
+%	\label{fig:ch4_sim4}
+%\end{figure}
+\begin{figure}[H]
+	\centering
+	\input{pics/ct_pd5_digi.tex}
+	\caption{Simulation results of CT PD controller with a sampling time $T_s = 100\,\mathrm{ms}$}
+	\label{fig:ch4_sim5}
+\end{figure}
+In this chapter, the effects of the discretisation of a \ac{CT} controller and the influence of the sampling time on the controller behaviour are shown. Optimally, the sampling time should be $1\,\mathrm{ms}$ or even less. If the sampling time is too high, the closed loop system starts to oscillate and if the sampling time is increased even further, it can result in unstable behaviour.\\
+In the next chapter, another \ac{CT} like controller is analysed for its behaviour when applied to the 2 \ac{DOF} planar robot.

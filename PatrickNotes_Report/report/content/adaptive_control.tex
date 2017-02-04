@@ -1,0 +1,52 @@
+\chapter{Adaptive control}
+An adaptive controller uses an algorithm to change the parameters of the control law during the control process in order to minimize the error of the system. For the control of the planar robot, an inertia related adaptive controller is used. For this approach, the dynamic equation of the robot arm is reordered. All known parts of the dynamic equation are collected into a matrix denoted by $\mathbf{Y}(.)$ and the parameters, which have to be adapted, are gathered in a vector denoted by $\varphi$. In this case, the masses of the system are supposed to be unknown. With the following equation, the matrix $\mathbf{Y}(.)$ can be calculated:
+\begin{equation*}
+\mathbf{Y}(.)\varphi = \mathbf{M}(\ddot{\mathbf{q}}_D + \Lambda \dot{\mathbf{e}}) + \mathbf{V}_m(\dot{\mathbf{q}}_D + \Lambda \mathbf{e})+ \mathbf{g}
+\end{equation*}
+As already mentioned, the masses are unknown. Therefore, the parameter vector $\varphi$ consists of the two masses. All other parts of the equation are put into $\mathbf{Y}(.)$. This results in the following elements of the matrix:
+\begin{align*}
+	Y_{11} =& \input{equations/Y11}\\
+	Y_{12} =& \input{equations/Y12}\\
+	Y_{21} =& \input{equations/Y21}\\
+	Y_{22} =& \input{equations/Y22}
+\end{align*}
+Furthermore, the tracking error of the system needs to be defined. This is done in a similar way to the sliding surface of the sliding mode controller:
+\begin{equation*}
+	\mathbf{r} = \Lambda \mathbf{e} + \dot{\mathbf{e}}
+\end{equation*}
+$\Lambda$ is again a diagonal matrix which is positive definite. With these components, the control law can be built:
+\begin{gather*}
+\tau_c = \mathbf{Y}(.)\hat{\varphi} + \mathbf{K}_v \mathbf{r}
+\intertext{where:}
+\begin{tabular}{>{$}l<{$} @{${}:{}$} l}
+\hat{\varphi} & approximated system parameters\\
+\mathbf{K}_v & diagonal gain matrix, positive definite
+\end{tabular}\nonumber
+\end{gather*}
+As a last component, the adaptation rule for the unknown parameters is needed:
+\begin{gather*}
+\dot{\hat{\varphi}} = \Gamma \mathbf{Y}^T(.)\mathbf{r}
+\intertext{where:}
+\begin{tabular}{>{$}l<{$} @{${}:{}$} l}
+\Gamma & diagonal matrix which defines adaptation speed
+\end{tabular}\nonumber
+\end{gather*}
+For the simulation of the adaptive controller, the masses of the planar robot are changed to $m_1 = 0.8\,\mathrm{kg}$ and $m_2 = 2.3\,\mathrm{kg}$. The initial value for the parameter vector is supposed to be $\hat{m}_1 = \hat{m}_2 = 0\,\mathrm{kg}$. The following two reference signals are used for the two joints:
+\begin{equation*}
+	q_{D,1} = q_{D,2} = \sin(t)
+\end{equation*}
+As controller parameters, $\lambda_i = 5$, $\gamma_i = 10$ and $k_{v,i} = 100$ were used. In Figure \ref{fig:ch7_sim1}, the simulation results can be seen. The upper left plot shows the adaptation of the parameters. After approximately $2\,\mathrm{s}$, the parameters are adapted to the real values. The plot at the upper right side shows the applied control torque. The plots at the bottom show the position and velocity error. It can be seen, that the position error does not exceed $0.05\,\mathrm{rad}$ for both joints and converges towards zero after approximately $2\,\mathrm{s}$.
+\begin{figure}[H]
+	\centering
+	\input{pics/ac1.tex}
+	\caption{Simulation results of adaptive controller with $\lambda_i = 5$, $\gamma_i = 10$ and $k_{v,i} = 100$}
+	\label{fig:ch7_sim1}
+\end{figure}
+Another simulation of the adaptive controller with $k_{v,i} = 10$ was realised. All other parameters are unchanged. The results can be seen in Figure \ref{fig:ch7_sim2}. Compared to the previous simulation, the adaptation process takes a longer time, as still some ripples are present at $3\,\mathrm{s}$. Also the initial torque peak is approximately $50\,\mathrm{N\,m}$ higher than in the previous simulation. The position error of the second joint has a high peak with almost $0.3\,\mathrm{rad}$. After approximately $4\,\mathrm{s}$, the parameters are adapted and the system is settled.
+\begin{figure}[H]
+	\centering
+	\input{pics/ac2.tex}
+	\caption{Simulation results of adaptive controller with $\lambda_i = 5$, $\gamma_i = 10$ and $k_{v,i} = 10$}
+	\label{fig:ch7_sim2}
+\end{figure}
+In this chapter, an adaptive controller was shown. Although the masses were supposed to be unknown at the beginning, the controller managed to adapt to the system in a fast manner.

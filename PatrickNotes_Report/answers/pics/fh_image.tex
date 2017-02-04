@@ -1,0 +1,41 @@
+\begin{tikzpicture}[font=\sffamily]
+	\node [circle] (dot1) {};
+	\node [circle] (dot2) at ($(dot1.west) + (-0.4, 0)$) {};
+	\node [circle] (dot3) at ($(dot1.east) + (+0.4, 0)$) {};
+	\node [circle] (dot4) at ($(dot2.north) + (0, 0.4)$) {};
+	\node [circle] (dot5) at ($(dot3.north) + (0, 0.4)$) {};
+	\node [circle] (dot6) at ($(dot2.south) + (0, -0.4)$) {};
+	\node [circle] (dot7) at ($(dot3.south) + (0, -0.4)$) {};
+	
+	\node [circle] (fdot1) at ($(dot1) + (-2, 0)$) {};
+	\node [circle] (fdot2) at ($(fdot1.west) + (-0.4, 0)$) {};
+	\node [circle] (fdot3) at ($(fdot1.north) + (0, 0.4)$) {};
+	\node [circle] (fdot4) at ($(fdot2.south) + (0, -0.4)$) {};
+	\node [circle] (fdot5) at ($(fdot2.north) + (0, 0.4)$) {};
+	\node [circle] (fdot6) at ($(fdot3.east) + (0.4, 0)$) {};
+	
+	\draw [ultra thick] ($(fdot5.north west)+(-0.5, 0.6)$) -- ($(fdot4.south west)+(-0.5, -0.6)$);
+	
+	\node [red!80!black, text width=2.6cm, align=flush center] (text1) at ($(fdot1) + (-2.9, 0.6)$) {\textbf{C\hfill A\hfill R\hfill I\hfill N\hfill T\hfill H\hfill I\hfill A}};
+	\node [text width=2.6cm, align=center] (text2) at ($(text1.south) + (0, -0.13)$) {\textbf{U\hfill N\hfill I\hfill V\hfill E\hfill R\hfill S\hfill I\hfill T\hfill Y}};
+	\node [text width=2.6cm, align=center] (text3) at ($(text2.south) + (0, -0.13)$) {\textbf{O\hfill F \hfill A\hfill P\hfill P\hfill L\hfill I\hfill E\hfill D}};
+	\node [text width=2.6cm, align=center] (text4) at ($(text3.south) + (0, -0.13)$) {\textbf{S\hfill C\hfill I\hfill E\hfill N\hfill C\hfill E\hfill S}};
+	
+	\node [text width=5cm, align=center] (text5) at ($(dot4.west) + (2.5, 0.6)$) {\textbf{F\hfill A\hfill C\hfill H\hfill H\hfill O\hfill C\hfill H\hfill S\hfill C\hfill H\hfill U\hfill L\hfill E}};
+	\node [red!80!black, text width=3.1cm, font={\Large\sffamily}] (text6) at ($(dot5.east) + (1.92, 0.05)$) {\textbf{K\hfill Ä\hfill R\hfill N\hfill T\hfill E\hfill N}};
+	
+	\fill (dot1) circle [radius=7pt];
+	\fill (dot2) circle [radius=7pt];
+	\fill (dot3) circle [radius=7pt];
+	\fill (dot4) circle [radius=7pt];
+	\fill (dot5) circle [radius=7pt];
+	\fill (dot6) circle [radius=7pt];
+	\fill (dot7) circle [radius=7pt];
+	
+	\fill [red!80!black] (fdot1) circle [radius=7pt];
+	\fill [red!80!black] (fdot2) circle [radius=7pt];
+	\fill [red!80!black] (fdot3) circle [radius=7pt];
+	\fill [red!80!black] (fdot4) circle [radius=7pt];
+	\fill [red!80!black] (fdot5) circle [radius=7pt];
+	\fill [red!80!black] (fdot6) circle [radius=7pt];
+\end{tikzpicture}

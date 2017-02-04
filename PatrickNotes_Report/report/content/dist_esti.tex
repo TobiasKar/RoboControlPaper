@@ -1,0 +1,67 @@
+\chapter{CT like controller with disturbance estimator}
+Similar to the classical joint controller is this a decoupled control law. This means, every joint can be controlled separately. This is an advantage, as every joint can be controlled by a separate processing unit and does not need the information of the other joints. To weaken the effects of the nonlinearities, which were completely neglected in the classical joint control approach, a disturbance estimator is included in this controller. The control law consists of the average moment of inertia of the corresponding joint, a PD controller for the stabilisation and the disturbance estimator to compensate the unknown or unmodelled dynamics. The control law for the $i^{th}$ joint has the following form:
+\begin{gather*}
+	\tau_{c,i} = \bar{M}_{ii}\ddot{q}_{calc,i}+ \hat{w}_i(q_i,\dot{q}_i)
+	\intertext{where:}
+	\begin{tabular}{>{$}l<{$} @{${}:{}$} l}
+		\bar{M}_{ii}             & average moment of inertia of the joint         \\
+		\ddot{q}_{calc,i}        & $\ddot{q}_{D,i} + k_{d,i}\dot{e}_i+k_{p,i}e_i$ \\
+		\hat{w}_i(q_i,\dot{q}_i) & estimated disturbances
+	\end{tabular}\nonumber
+\end{gather*}
+For the estimation of the disturbances, a PI estimator of the following form is used:
+\begin{gather*}
+\hat{w}_i(q_i,\dot{q}_i) = l_i(\dot{q}_{calc,i} - \dot{q}_i)
+\label{eq:eq1}
+\intertext{where:}
+\begin{tabular}{>{$}l<{$} @{${}:{}$} l}
+l_i & estimator parameter
+\end{tabular}\nonumber
+\end{gather*}
+Figure \ref{fig:ch5_structure} shows the block diagram of the controller structure for the $i^{th}$ joint.
+\begin{figure}[H]
+	\centering
+	\input{pics/dist_esti_controller.tex}
+	\caption{Schematic of the controller structure for $i^{th}$ joint}
+	\label{fig:ch5_structure}
+\end{figure}
+When applying this controller,the error dynamics contain two frequencies. The first frequency is $\omega_n$ which is defined by the PD controller. The second frequency $\omega_{estim}$ is defined as $\frac{l_i}{\bar{M}_{ii}}$. Through the controller parameter $l_i$, this frequency can be set to different values. The peak position error depends on the ratio between the two frequencies.\\
+To analyse the influence of the controller parameters, three simulations using different parameters were realised. In Table \ref{tab:ch5_distesti}, the applied values for the three controller are summarised.
+\begin{table}[H]
+	\begin{center}
+		\caption{Controller parameters for simulations witch CT like controller with disturbance estimator}
+		\label{tab:ch5_distesti}
+		\begin{tabular}{lll}
+			      &                                   & According          \\
+			$l_i$ & $\frac{\omega_{estim}}{\omega_n}$ & Figure             \\
+			\midrule
+			20    & 2                                 & \ref{fig:ch5_sim1} \\
+			100   & 2                                 & \ref{fig:ch5_sim2} \\
+			100   & 10                                & \ref{fig:ch5_sim3} \\
+			\bottomrule
+		\end{tabular}
+	\end{center}
+\end{table}
+Figure \ref{fig:ch5_sim1} shows the simulation results for $l_1 = l_2 = 20$ and a ratio of 2. The position error of the first joint does not exceed a maximum value of $0.02\,\mathrm{rad}$ but takes approximately $20\,\mathrm{s}$ to settle. For the second joint, the error settles much faster, at approximately $5\,\mathrm{s}$. The applied torque has a high initial peak and oscillates afterwards in the range of $24\,\mathrm{N\,m}$ and $35\,\mathrm{N\,m}$ for the first joint and from $7.5\,\mathrm{N\,m}$ up to $12\,\mathrm{N\,m}$ for the second joint.
+\begin{figure}[H]
+	\centering
+	\input{pics/ct_dist_esti1.tex}
+	\caption{Simulation results of CT like controller with disturbance estimator with $l_1 = l_2 = 20$ and $\frac{\omega_{estim}}{\omega_n} = 2$}
+	\label{fig:ch5_sim1}
+\end{figure}
+Figure \ref{fig:ch5_sim2} shows the results of the simulation with $l_1 = l_2 = 100$ and a ratio of 2. Compared to the previous simulation, the system settles much faster. The first joint takes approximately $2\,\mathrm{s}$ to settle and the second is already settled after $1\,\mathrm{s}$. Also, the oscillation of the error has a lower amplitude than before. On the other hand, the initial torque peak is higher, with a value of approximately $200\,\mathrm{N\,m}$.\\
+In Figure \ref{fig:ch5_sim3}, the simulation results with the controller parameters $l_1 = l_2 = 100$ and $\frac{\omega_{estim}}{\omega_n} = 10$ can be seen. Through the higher ratio, the frequency of the controller is reduced, which causes a higher settling time as in the previous simulation. The peak error is still much lower than in the first simulation with $l_i = 20$. The amplitude of the oscillation of the error is similar to the previous results. Increasing the ratio resulted in a lower torque peak at the beginning, which is now around $100\,\mathrm{N\,m}$.
+\begin{figure}[H]
+	\centering
+	\input{pics/ct_dist_esti2.tex}
+	\caption{Simulation results of CT like controller with disturbance estimator with $l_1 = l_2 = 100$ and $\frac{\omega_{estim}}{\omega_n} = 2$}
+	\label{fig:ch5_sim2}
+\end{figure}
+In this chapter, a \ac{CT} like controller with PI disturbance estimator was shown and its efficiency was analysed. The behaviour of the controller depends mainly on the estimator parameter $l_i$ and the ratio between the frequencies $\frac{\omega_{estim}}{\omega_n}$. Increasing the parameter $l_i$ results in a faster settling of the error system. Changing the ratio $\frac{\omega_{estim}}{\omega_n}$ results in a change of the maximum position error and also influences the settling time.\\
+The next chapter describes the design and the simulation of a sliding mode controller for the 2 \ac{DOF} planar robot.
+\begin{figure}[H]
+	\centering
+	\input{pics/ct_dist_esti3.tex}
+	\caption{Simulation results of CT like controller with disturbance estimator with $l_1 = l_2 = 100$ and $\frac{\omega_{estim}}{\omega_n} = 10$}
+	\label{fig:ch5_sim3}
+\end{figure}

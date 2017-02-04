@@ -1,0 +1,85 @@
+\chapter{Sliding mode control}
+The main idea behind \ac{SMC} is to force a system to a so called sliding manifold and let it slide along this surface to the origin. When on the sliding manifold, the system behaves like a system with an order of one less than the original. To keep the system on the sliding manifold, a rapid switching actuating signal is applied. This is obtained by the \textit{sign} function. As this would need infinite fast switching, which cannot be realised, often a boundary layer is introduced, where the \textit{sign} function is replaced with another function, like the \textit{tanh}.\\
+Each joint of the robot is a second order system. This means, that the sliding surface has to be of first order. In order to stabilise the error system of the robot arm, the following sliding manifold is used for the $i^{th}$ joint:
+\begin{gather*}
+\mathbf{s} = \dot{\mathbf{e}} + \Lambda \mathbf{e}
+\intertext{where:}
+\begin{tabular}{>{$}l<{$} @{${}:{}$} l}
+\Lambda & diagonal matrix with time constants of the systems, when in sliding mode
+\end{tabular}\nonumber
+\end{gather*}
+This corresponds to a differential equation of first order. In order, that the system moves towards the origin, $\lambda > 0$ must be fulfilled. To control the robot, the following \ac{SMC} law is applied:
+\begin{gather*}
+\tau_c = \hat{\mathbf{M}}\ddot{\mathbf{q}}_s + \hat{\mathbf{V}}_m \dot{\mathbf{q}}_s + \hat{\mathbf{g}} + \mathbf{K} sign(\mathbf{s})
+\intertext{where:}
+\begin{tabular}{>{$}l<{$} @{${}:{}$} l}
+\hat{\mathbf{M}} & estimated inertia matrix\\
+\hat{\mathbf{V}}_m & estimated centrifugal/coriolis matrix\\
+\dot{\mathbf{q}}_s & $\Lambda \mathbf{e} + \mathbf{\dot{q}}_D$\\
+\hat{\mathbf{g}} & estimated gravitation vector\\
+\mathbf{K} & diagonal matrix with gains
+\end{tabular}\nonumber
+\end{gather*}
+The parameter matrix $\mathbf{K}$ is used to suppress the unknown or unmodelled dynamics of the system. This means, the better the dynamics are known or modelled, the lower $\mathbf{K}$ can be chosen.\\
+To test the performance of the \ac{SMC} law, some simulation were done. For the first few simulations, the ideal sliding mode controller with the \textit{sign} function was used. For the last simulations, the \textit{sign} was replaced with the \textit{tanh} function, to show the effects of the boundary layer. For the simulations, the following reference signals were used:
+\begin{align*}
+	q_{D,1} = \sin(t)\\
+	q_{D,2} = \cos(t)
+\end{align*}
+\section{Ideal sliding mode controller}
+As estimated parameters, a portion of the actual parameters is used. The first three simulations use $\hat{\mathbf{M}} = 0.25\mathbf{M}$, $\hat{\mathbf{V}}_m = 0.75\mathbf{V}_m$ and $\hat{\mathbf{g}} = 0.75\mathbf{g}$. To show the influence of the controller parameters, the first simulation uses $\lambda_i = 10$ and $k_i = 20$. In the second simulation $\lambda_i = 10$ and $k_i = 10$ were applied. For the last simulation, $\lambda_i = 25$ and $k_i = 10$ was used.\\
+Figure \ref{fig:ch6_sim1} shows the simulation results for the parameters $\lambda_i = 10$ and $k_i = 20$. The position error of the first joint converges to zero after approximately $1\,\mathrm{s}$ and for the second joint after $0.5\,\mathrm{s}$. The torques of both joints show the high frequency switching of the \ac{SMC} law.
+\begin{figure}[H]
+	\centering
+	\input{pics/smc1.tex}
+	\caption{Simulation results of sliding mode controller with $\lambda_i = 10$ and $k_i = 20$}
+	\label{fig:ch6_sim1}
+\end{figure}
+In Figure \ref{fig:ch6_sim2}, the simulation results for the parameters $\lambda_i = 10$ and $k_i = 10$ are shown. Compared to the previous simulation, the first joint takes approximately twice as long to converge. Also, the maximum position error is higher than in the previous simulation. As the gain for the \textit{sign} function was reduced, the height of the torque jumps is also reduced. Furthermore, the maximum and minimum torque for the two joints is also reduced.\\
+Figure \ref{fig:ch6_sim3} shows the results of the simulation with the increased $\lambda$. It can be seen that the position error takes even longer to converge towards zero. Also, the torque has a high peak of $130\,\mathrm{N\,m}$ in the settling process.\\
+For the next two simulations, the estimated gravitation is reduced to zero. For the first simulation, the controller parameters of the first simulation were used, $\lambda_i = 10$ and $k_i = 20$, and for the second one the parameters were adapted, to obtain better results.
+\begin{figure}[H]
+	\centering
+	\input{pics/smc2.tex}
+	\caption{Simulation results of sliding mode controller with $\lambda_i = 10$ and $k_i = 10$}
+	\label{fig:ch6_sim2}
+\end{figure}
+\begin{figure}[H]
+	\centering
+	\input{pics/smc3.tex}
+	\caption{Simulation results of sliding mode controller with $\lambda_i = 25$ and $k_i = 10$}
+	\label{fig:ch6_sim3}
+\end{figure}
+Figure \ref{fig:ch6_sim4} shows the simulation results for the controller with no gravity estimation and the original controller parameters. Because of the neglected gravitation, the position error for the first joint does not converge anymore. The applied switching signal is not high enough to keep the joint on the sliding mode.
+\begin{figure}[H]
+	\centering
+	\input{pics/smc4.tex}
+	\caption{Simulation results of sliding mode controller with $\lambda_i = 10$, $k_i = 20$ and $\hat{\mathbf{g}} = 0$}
+	\label{fig:ch6_sim4}
+\end{figure}
+In Figure \ref{fig:ch6_sim5} the results of the simulation with no gravity estimation and the adapted \ac{SMC} law parameters can be seen. The gain of the \textit{sign} function was increased to 30. By using these parameters, the error system of the first joint is reduced to an oscillation with small amplitude. In order to settle the first joint, $2\,\mathrm{s}$ are needed. The change of the performance of the second joint is not clearly visible.\\
+For the next two simulations, a boundary layer is introduced.
+\begin{figure}[H]
+	\centering
+	\input{pics/smc5.tex}
+	\caption{Simulation results of sliding mode controller with $\lambda_i = 10$, $k_i = 30$ and $\hat{\mathbf{g}} = 0$}
+	\label{fig:ch6_sim5}
+\end{figure}
+\section{Boundary layer}
+To check the influence of the change form the ideal sliding mode, which uses the \textit{sign} function, to a boundary layer with a \textit{tanh} function another two simulation were realised. For the first simulation, the controller parameters $\lambda_i = 10$ and $k_i = 20$ were used along with $tanh(\mathbf{s})$. For the second simulation, the parameters were adapted, to result in a more suitable behaviour.\\
+Figure \ref{fig:ch6_sim6} shows the results of the simulation with the boundary layer $tanh(\mathbf{s})$ with the initial controller parameters. The high frequency switching of the applied torque has disappeared. On the other hand, the error dynamics has lost its asymptotic stability and shows some oscillating behaviour around the origin.\\
+For the simulation results, which can be seen in Figure \ref{fig:ch6_sim7}, the parameters $\lambda_i = 10$ and $k_i = 40$ along with the boundary layer $tanh(\mathbf{5s})$ were used. Using this set of parameters, the amplitude of the oscillation of the error dynamics of the first joint is greatly reduced. The initial peak is approximately $0.4\,\mathrm{rad}$. On the other hand, the applied torque is also increased, when compared to the previous simulation.\\
+In this chapter, a \ac{SMC} law was used for the control of the 2 \ac{DOF} planar robot. This control concept uses a high frequency switching to force the system behaviour to converge. The robustness of this concept was analysed, by only using a portion of the system dynamics for the controller design and by even neglecting a part of it. The final simulations showed the influence of the boundary layer.\\
+In the next chapter, an adaptive control law is presented and its behaviour is analysed.
+\begin{figure}[H]
+	\centering
+	\input{pics/smc6.tex}
+	\caption{Simulation results of sliding mode controller with $\lambda_i = 10$, $k_i = 20$ and $tanh(\mathbf{s})$}
+	\label{fig:ch6_sim6}
+\end{figure}
+\begin{figure}[H]
+	\centering
+	\input{pics/smc7.tex}
+	\caption{Simulation results of sliding mode controller with $\lambda_i = 10$, $k_i = 40$ and $tanh(\mathbf{5s})$}
+	\label{fig:ch6_sim7}
+\end{figure}

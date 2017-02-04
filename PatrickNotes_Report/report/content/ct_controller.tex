@@ -1,0 +1,196 @@
+\chapter{Computed torque control}
+A \ac{CT} controller is a nonlinear controller, which linearises the error system and applies then a linear control law for the stabilisation of the closed loop system. As a first step, the tracking error system need to be defined:
+\begin{gather*}
+	\mathbf{e} = \mathbf{q}_D - \mathbf{q}\\
+	\dot{\mathbf{e}} = \dot{\mathbf{q}}_D - \dot{\mathbf{q}}\\
+	\ddot{\mathbf{e}} = \ddot{\mathbf{q}}_D - \ddot{\mathbf{q}}
+	%\label{eq:eq1}
+	\intertext{where:}
+	\begin{tabular}{>{$}l<{$} @{${}:{}$} l}
+	\mathbf{e} & error vector\\
+	\mathbf{q}_D & vector with reference trajectories for each joint
+	\end{tabular}\nonumber
+\end{gather*}
+Substituting the acceleration vector $\ddot{\mathbf{q}}$ with the robot dynamics (Equation \ref{eq:ch1_robotdynamics}) results in
+\begin{equation*}
+	\ddot{\mathbf{e}} = \ddot{\mathbf{q}}_D - \mathbf{M}^{-1}\left(\tau - \mathbf{v} - \mathbf{g}\right) + \mathbf{M}^{-1}\tau_D
+\end{equation*}
+Defining $\mathbf{u} = \ddot{\mathbf{q}}_D - \mathbf{M}^{-1}\left(\tau - \mathbf{v} - \mathbf{g}\right)$ and $\mathbf{w} = \mathbf{M}^{-1}\tau_D$ results in the following linear system
+\begin{equation*}
+	\left(\begin{array}{c}
+		\dot{\mathbf{e}} \\ \ddot{\mathbf{e}}
+	\end{array}\right) = \left(\begin{array}{cc}
+	\mathbf{0} & \mathbf{I} \\
+	\mathbf{0} & \mathbf{0} 
+	\end{array}\right) \left(\begin{array}{c}
+	\mathbf{e} \\ \dot{\mathbf{e}}
+	\end{array}\right) + \left(\begin{array}{c}
+	\mathbf{0} \\ \mathbf{I}
+	\end{array}\right) \mathbf{u} + \left(\begin{array}{c}
+	\mathbf{0} \\ \mathbf{I}
+	\end{array}\right) \mathbf{w}
+\end{equation*}
+As the actual input of the robot arm is not the input $\mathbf{u}$, but the motor torque $\tau$, $\mathbf{u} = \ddot{\mathbf{q}}_D - \mathbf{M}^{-1}\left(\tau - \mathbf{v} - \mathbf{g}\right)$ needs to be solved for $\tau$:
+\begin{equation}
+	\tau = \mathbf{M}(\ddot{\mathbf{q}}_D - \mathbf{u}) + \mathbf{v} + \mathbf{g}
+	\label{eq:ch2_ctlaw}
+\end{equation}
+Equation \ref{eq:ch2_ctlaw} shows the \ac{CT} control law for the inner feedforward loop. This is the linearising control law, which nullifies the nonlinear parts of the robot dynamics and reduces the system to a linear double integrator system. The dynamics of the closed loop can be defined by choosing a specific linear controller for $\mathbf{u}$. Figure \ref{fig:ch2_control_loop} shows a schematic of the implementation of a \ac{CT} controller, with the linearising feedforward controller and the linear control law in the outer loop.
+\begin{figure}[H]
+	\centering
+	\input{pics/ct_control_loop.tex}
+	\caption{Control loop with implement computed torque controller}
+	\label{fig:ch2_control_loop}
+\end{figure}
+In the following two sections, two different control laws for $\mathbf{u}$ are designed and the behaviour of the closed loop system is simulated. For the simulations, the following two reference trajectories are used:
+\begin{align*}
+	q_{1,D} &= 0.1 \sin(\pi t)\\
+	q_{2,D} &= 0.1 \cos(\pi t)
+\end{align*}
+
+\section{PD controller for outer loop}
+\label{sec:ch2_1}
+As first step, a PD control law of the form
+\begin{equation*}
+\end{equation*}
+\begin{gather*}
+\mathbf{u} = -\mathbf{K}_d \dot{\mathbf{e}} - \mathbf{K}_p \mathbf{e}
+\intertext{where:}
+\begin{tabular}{>{$}l<{$} @{${}:{}$} l}
+\mathbf{K}_d & diagonal matrix with derivative gains \\
+\mathbf{K}_p & diagonal matrix with proportional gains
+\end{tabular}\nonumber
+\end{gather*}
+To find the stability range for the two gains, the linear system for the $i^{th}$ joint is considered.
+\begin{equation*}
+	\left(\begin{array}{c}
+	\dot{e}_i \\ \ddot{e}_i
+	\end{array}\right) = \left(\begin{array}{cc}
+	0 & 1 \\
+	-k_d & -k_p 
+	\end{array}\right) \left(\begin{array}{c}
+	e_i \\ \dot{e}_i
+	\end{array}\right) + \left(\begin{array}{c}
+	0 \\ 1
+	\end{array}\right) w_i
+\end{equation*}
+The characteristic polynomial of the closed loop is then given by:
+\begin{equation*}
+	\Delta(s) = s^2 + k_{d,i} s + k_{p,i} \overset{!}{=} 0
+\end{equation*}
+The roots of this polynomial are negative if all coefficients have the same sign. Therefore, the controlled system is stable if $k_{d,i}$ and $k_{p,i}$ are both chosen positive. To set the two parameters, the characteristic polynomial is compared with a general second order polynomial:
+\begin{equation*}
+	p(s) = s^2 + 2\zeta \omega_ns+{\omega_n}^2
+\end{equation*}
+By comparing the two polynomials, the parameters of the controller can be set with $k_{d,i} = 2\zeta\omega_n$ and $k_{p,i} = {\omega_n}^2$. $\zeta$ describes the damping factor and $\omega_n$ the undamped, natural frequency. For the first simulation of the controller, the damping factor is set to $\zeta = 1$. This results in a faster system response than by choosing $\zeta > 1$ and has no overshoot, compared with $\zeta < 1$. To show the effects of over- and under-damping, two additional simulations are done. For the frequency $\omega_n = 10\,\frac{rad}{s}$ is used. A last simulation shows the influence of disturbances on the control behaviour. Table \ref{tab:ch2_pdparams} shows the controller parameters and the according Figure numbers, which show the simulation results.
+\begin{table}[H]
+	\begin{center}
+		\caption{Controller parameters for simulations witch PD outer loop controller}
+		\label{tab:ch2_pdparams}
+		\begin{tabular}{lllll}
+			 & & & & According \\
+			 & $k_{p,i}$ & $k_{d,i}$ & $\tau_D$ & Figure \\
+			\midrule
+			$\zeta = 1$: & 100 & 20 & $0\,\mathrm{N\,m}$ & \ref{fig:ch2_sim1} \\
+			$\zeta = 0.1$: & 100 & 2 & $0\,\mathrm{N\,m}$ & \ref{fig:ch2_sim2} \\
+			$\zeta = 10$: & 100 & 200 & $0\,\mathrm{N\,m}$ & \ref{fig:ch2_sim3} \\
+			$\zeta = 1$: & 100 & 20 & $1\,\mathrm{N\,m}$ & \ref{fig:ch2_sim4} \\
+			\bottomrule
+		\end{tabular}
+	\end{center}
+\end{table}
+Figure \ref{fig:ch2_sim1} shows the simulation results for the \ac{CT} controller with PD controller and critical damping. In the upper two plots, the angular positions $\mathbf{q}$ and the applied torques of both joints can be seen. Joint 1 has an average input torque of $30\,\mathrm{N\,m}$ and a peak torque of $80\mathrm{N\,m}$ at the beginning. The other joint has gets an average torque of $10\,\mathrm{N\,m}$ and a peak torque of $30\,\mathrm{N\,m}$ at the beginning. These values are very high and a very strong motor would be needed to be able to apply such torques. The bottom left sub-figure shows the tracking error of the two joints. The error of the first joint starts at zero, has a small peak of approximately $0.001\,\mathrm{rad}$, and then converges to zero at $0.5\,\mathrm{s}$. The second joint starts with an error of $0.1\,\mathrm{rad}$, which is caused by the cosine input signal. The error also converges to zero at approximately $0.5\,\mathrm{s}$. The last plot shows the velocity error, which also converges to zero for both joints.
+\begin{figure}[H]
+	\centering
+	\input{pics/ct_pd1.tex}
+	\caption{Simulation results of closed loop with PD controller with $\zeta = 1$}
+	\label{fig:ch2_sim1}
+\end{figure}
+Figure \ref{fig:ch2_sim2} shows the results of the simulation with reduced damping factor. The upper left plot also shows the angular position of both joints. At the beginning of the simulation, some oscillations can be seen. In the sub plot, which shows the tracking error of both joints, the oscillating behaviour of the weak damped second order polynomial can be seen. This also shows, that it takes approximately $4\,\mathrm{s}$ for the errors to settle. Even though the transient behaviour is slower, the applied peak torques are lower than in the previous simulation. The first joint has a peak torque of $50\,\mathrm{N\,m}$ and the second joint needs a peak torque of $20\,\mathrm{N\,m}$.
+\begin{figure}[H]
+	\centering
+	\input{pics/ct_pd2.tex}
+	\caption{Simulation results of closed loop with PD controller with $\zeta = 0.1$}
+	\label{fig:ch2_sim2}
+\end{figure}
+In Figure \ref{fig:ch2_sim3}, the results of the simulation with a damping factor of $\zeta = 10$ are shown. It can be seen, that the tracking error of the second joint takes over $8\,\mathrm{s}$ to converge towards zero, which is much slower, than with critical damping. Also, the initial torque has a much higher peak with over $350\,\mathrm{N\,m}$ for the first joint and approximately $150\,\mathrm{N\,m}$ for the second joint. This means, that the transient response of the system is much slower and the input torque is much higher, than when critical damping is used.\\
+Figure \ref{fig:ch2_sim4} shows the simulation results for the PD controller with critical damping and a disturbance, which is applied on each joint, of $\tau_D = 1\,\mathrm{N\,m}$. The transient response of the system is the same, as in the first simulation. On the other hand, the disturbance causes a steady-state error. In order to remove this steady-state error, an integrating part needs to be added to the open loop system.
+\begin{figure}[H]
+	\centering
+	\input{pics/ct_pd3.tex}
+	\caption{Simulation results of closed loop with PD controller with $\zeta = 10$}
+	\label{fig:ch2_sim3}
+\end{figure}
+\begin{figure}[H]
+	\centering
+	\input{pics/ct_pd4.tex}
+	\caption{Simulation results of closed loop with PD controller with $\zeta = 1$ and added disturbance $\tau_D = 1\,\mathrm{N\,m}$}
+	\label{fig:ch2_sim4}
+\end{figure}
+In the next section, a PID controller is used as an outer loop controller, to overcome the steady-state error which is caused by the external disturbance.
+\section{PID outer loop controller}
+In order to apply an integrator to the open loop system, a new state is introduced in the state space description of the error dynamics:
+\begin{gather*}
+	\left(\begin{array}{c}
+	\dot{\mathbf{\varepsilon}} \\
+	\dot{\mathbf{e}} \\ \ddot{\mathbf{e}}
+	\end{array}\right) = \left(\begin{array}{ccc}
+	\mathbf{0} & \mathbf{I} & \mathbf{0} \\
+	\mathbf{0} & \mathbf{0} & \mathbf{I} \\
+	\mathbf{0} & \mathbf{0} & \mathbf{0}
+	\end{array}\right) \left(\begin{array}{c}
+	\mathbf{\varepsilon} \\ \mathbf{e} \\ \dot{\mathbf{e}}
+	\end{array}\right) + \left(\begin{array}{c}
+	\mathbf{0} \\ \mathbf{0} \\ \mathbf{I}
+	\end{array}\right) \mathbf{u} + \left(\begin{array}{c}
+	\mathbf{0} \\ \mathbf{0} \\ \mathbf{I}
+	\end{array}\right) \mathbf{w}
+	\intertext{where:}
+	\begin{tabular}{>{$}l<{$} @{${}:{}$} l}
+	\varepsilon & $\int \mathbf{e(\tau)}\mathrm{d}\tau$
+	\end{tabular}\nonumber
+\end{gather*}
+This leads to a new outer loop control law, which includes the new state variable $\varepsilon$:
+\begin{equation*}
+	\mathbf{u} = -\mathbf{K}_d \dot{\mathbf{e}} - \mathbf{K}_p \mathbf{e} - \mathbf{K}_i \mathbf{\varepsilon}
+\end{equation*}
+Before implementing a controller with PID structure, the stability condition for the closed loop system need to be defined. Therefore, again the system of the $i^{th}$ link is used. The characteristic polynomial of this link is given by:
+\begin{equation*}
+	\Delta(s) = s^3 + k_{d,i}s^2 + k_{p,i}s + k_{i,i} \overset{!}{=} 0
+\end{equation*}
+To calculate the conditions, for which this polynomial only contains negative roots, the Routh-Hurwitz stability criterion is used.
+\begin{gather*}
+\begin{tabular}{>{$}c<{$}>{$}c<{$}>{$}c<{$}}
+	1 & k_{p,i} & 0 \\
+	k_{d,i} & k_{i,i} & 0\\
+	\dfrac{k_{d,i}k_{p,i}-k_{i,i}}{k_{d,i}} & 0 & 0\\
+	k_{i,i} & 0 & 0
+\end{tabular}
+\end{gather*}
+In order, that the first row has no changes in sign, the following conditions need to be fulfilled:
+\begin{align*}
+	k_{d,i} &> 0\\
+	k_{i,i} &> 0\\
+	k_{p,i} &> \frac{k_{i,i}}{k_{d,i}}
+\end{align*}
+For the controller design, an integral gain $k_{i,i}=500$ is given. To define the other two parameter, $k_{p,i}$ and $k_{d,i}$, the general second order polynomial is used and a third, stable pole $a$ is added:
+\begin{align*}
+	p(s) &= (s^2 + 2\zeta \omega_ns+{\omega_n}^2)(s+a)\\
+	&= s^3 + (2\zeta\omega_n + a)s^2 + (2\zeta\omega_n a + {\omega_n}^2)s + {\omega_n}^2a \overset{!}{=} s^3 + k_{d,i}s^2 + k_{p,i}s + k_{i,i}
+\end{align*}
+By comparing the coefficients of the two polynomials, the parameters can be defined. $\zeta$ is again set to 1, for critical damping, and $\omega_n$ is set to $8\,\mathrm{\frac{rad}{s}}$. This results in $k_{p,i} = 2520$ and $k_{d,i} = 100.2$. For the simulation of the controller behaviour, first a disturbance torque $\tau_D = 1\,\mathrm{N\,m}$ is applied. Also, a second simulation shows the behaviour of the controller if an unknown payload of $0.5\,\mathrm{kg}$ is added to the robot.\\
+Figure \ref{fig:ch2_sim12} shows the simulation results of the \ac{CT} controller with PID outer loop controller. Similar to the last simulation with the PD outer loop controller, a disturbance torque of $1\,\mathrm{N\,m}$ is added to both joints. Due to the integrating part of the controller, the steady state error of the closed loop system is reduced to $0\,\mathrm{rad}$. The applied torque for the first joint ranges from $25,\mathrm{N\,m}$ up to $35,\mathrm{N\,m}$ and for the second joint a torque in the range of $8,\mathrm{N\,m}$ up to $13,\mathrm{N\,m}$ is used.
+\begin{figure}[H]
+	\centering
+	\input{pics/ct_pid1.tex}
+	\caption{Simulation results of closed loop with PID controller and disturbance}
+	\label{fig:ch2_sim12}
+\end{figure}
+Figure \ref{fig:ch2_sim22} shows the simulation results with an unknown payload of $0.5\,\mathrm{kg}$ added. Compared to the previous simulation, the position error of the joints does not converge to $0\,\mathrm{rad}$ anymore. The reason for this is, that the inner loop of the \ac{CT} controller does not match the nonlinearities of the system ideally and therefore, a nonlinear behaviour remains in the closed loop system. The error, which results from these nonlinearities can also not be compensated by the integrating part of the outer loop controller. As the mass of the second joint is higher, because of the unknown payload, the needed torque is also increased. The torque for the first joint now ranges from $32,\mathrm{N\,m}$ up to $48,\mathrm{N\,m}$ and for the second joint it ranges from $12,\mathrm{N\,m}$ up to $19,\mathrm{N\,m}$. This simulation shows, that for small steady state error a precise model of the system is needed.
+\begin{figure}[H]
+	\centering
+	\input{pics/ct_pid2.tex}
+	\caption{Simulation results of closed loop with PID controller and unknown payload}
+	\label{fig:ch2_sim22}
+\end{figure}
+In the next chapter, a derivation of the \ac{CT} controllers is described. Also, some simulations regarding this derivations will be done.
