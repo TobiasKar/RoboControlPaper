@@ -1,0 +1,113 @@
+\documentclass[12pt, bibliography=totoc, listof=totoc, svgnames]{scrreprt} 	% Beginn Dokument
+\usepackage{cite}				% Fürs Zitieren
+\usepackage[utf8]{inputenc} 	% Verwendete ASCII Codierung für ä ö ü
+\usepackage[dvips]{graphicx}	% Für Graphen
+\usepackage[english]{babel} 		% Englisch als Sprache
+\selectlanguage{english}
+\usepackage{amssymb}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{gensymb}
+\definecolor{mygreen}{rgb}{0.8,0.8,0.8}
+\lstset{backgroundcolor=\color{mygreen}}
+
+\usepackage[footnote]{acronym}
+%\renewcommand*\bflabel[1]{{\textbf{\textsf{#1}}\dotfill}}
+%\renewcommand*{\acsfont}[1]{{\color{black}\textit{#1}}}
+
+\usepackage{todonotes}
+
+%%% Papierformat %%%
+\usepackage{geometry}			
+\geometry{a4paper}
+\geometry{paper=a4paper,left=30 mm,right=30 mm,top=30 mm}
+
+%%% Packages für den Graphen %%%
+\usepackage{pgf}
+\usepackage{tikz}
+\usetikzlibrary{arrows,automata}
+\setlength{\parindent}{0mm}
+
+%%% Kopf & Fußzeilen %%%
+\usepackage{fancyhdr} % This should be set AFTER setting up the page geometry
+\pagestyle{fancy} % options: empty , plain , fancy
+\fancypagestyle{plain}{}% damit auch "plain" Seiten fancy werden
+\renewcommand{\headrulewidth}{1pt} % customise the layout…
+\lhead{\textsc{Fault Detection and Isolation with Sliding Mode Observers}\\
+%\emph{\leftmark}
+}\chead{}\rhead{}
+\lfoot{}\cfoot{}\rfoot{\thepage}
+\setlength{\headheight}{40pt}
+\renewcommand*{\chapterheadstartvskip}{\vspace*{.1\baselineskip}}% Abstand einstellen
+
+%%% HRule erzeugt eine Linie nach einem Absatz %%%
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+
+%%% Standard Titelblatt Einstellungen %%%
+%\title{Bachelorarbeit}
+%\author{\small{Sevim Eda}}
+%\date{\today}% 
+
+\usepackage{tabularx}
+\usepackage{amsmath}
+
+\usepackage{xcolor}
+\usepackage{verbatim}
+
+\bibliographystyle{unsrt}
+
+\begin{document}
+%\maketitle
+
+\include{title}
+%\tableofcontents
+%\renewcommand{\thepage}{\Roman{page}} \setcounter{page}{1}
+%\include{abstract}
+%\listoffigures
+%\listoftables
+%\include{acronym}
+%\renewcommand{\chaptermark}[1]{\markboth{\thechapter.\ #1}{}}
+\include{Introduction}
+%\include{Theory}
+%\include{Identification}
+%\include{Analysis}
+%\include{Conclusion}
+%\bibliography{bibliography}
+%\include{Statement}
+
+%%% Neues Kapitel %%%
+%\chapter{Kapitel}
+%\label{sec:Kapitel}
+%
+%\section{Unterpunkt}
+
+%%% Bild einfügen (nur .eps) %%%
+%\begin{figure}[h]
+%	\centering
+%	\includegraphics[width=0.85\textwidth]{pics/xyz}\\
+%	\caption{Parameter Sweep für die Weite des NMOS4}
+%	\label{fig:xyz}
+%\end{figure}
+% Simulink_Modell_Prints('name_simulink_datei','p')
+
+%%% Tabelle einfügen
+%\begin{table}[h]
+%	\begin{center}
+%		\caption{SPICE Parameter für NMOS und PMOS} 
+%		\begin{tabular}{|l|l|l|}
+%			\hline
+%			x & y & z\\
+%			\hline
+%		\end{tabular}
+%		\label{tab:}
+%	\end{center}
+%\end{table}
+
+%%% Formel einfügen
+%\begin{equation}
+%	\centering
+%	Formel
+%	\label{eq:}
+%\end{equation}
+
+\end{document}
