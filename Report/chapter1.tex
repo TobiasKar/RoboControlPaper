@@ -1,17 +1,69 @@
 \renewcommand{\thepage}{\arabic{page}} \setcounter{page}{1}
 
-\section*{Description of the research issue}
-In today's industry there is a clear trend into actively controlling more and more parameters of industrial machines. The advantages of the increasing number of controlled parameters include increased performance, flexibility, better environmental compatibility and many more.  \\ 
-Although the overall performance of an industrial machine can be increased with advanced controlling techniques, the process within those machines become more prone to errors and malfunctions. To avoid excessive downtimes of the machines or faults in the production it is important to monitor the processes within the machines and detect errors and malfunctions in an early state.\\
-Since monitoring of the processes with dedicated sensor systems can be expensive and difficult to implement, there has been methods developed which are able to identify errors and malfunctions based on sensor devices already needed for the implemented controllers. These methods can be summed up under the term "Fault Detections and Isolation". Most of these approaches are based on the models and the mathematical descriptions of the systems, which should be monitored. Since those models are always not a prefect description of the real world system, the applied methods should be robust to this variations within the system.\\
-The   
+\chapter{Properties of a Robot}
 
-\section*{Main goal and scope of this work}
-The aim of this thesis is to analyze a system of heater and a wafer, to quantify the coupling between the different heating zones and implement actions to reduce the coupling in between. The final target is to achieve an homogeneous temperature profile of across the entire wafer.
- 
-\section*{Methods and research approach}
-As one of the first steps the system must be identified. This happens only with experimental data. With the results from the system-identification the coupling between the individual systems can be quantified. After the coupling of the systems has been calculated, the values are analyzed and an overall evaluation of the systems is performed.
+In this chapter the basic properties of the robot will be described, therefore the dynamic equations of the motor will be given and the behavior of the robot will examined with some basic simulations.
 
-\section*{Course of actions}
+\section{Dynamic equation}
+The robot arm, which can be seen in figure \ref{fig:robot}, has two joints within the same plain. 
 
-\section*{Thesis content}
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.85\textwidth]{pics/robot.png}\\
+	\caption{Schmetics of the 2DOF Robot arm}
+	\label{fig:robot}
+\end{figure}
+
+The basic differential equation of the robot can be seen by \eqref{eq:dynamic equation}.
+\begin{gather}
+\mathbf{\tau} = \mathbf{M}(\mathbf{q})\mathbf{\ddot{q}} + \mathbf{v}(\mathbf{q}, \mathbf{\dot{q}}) + \mathbf{g}(\mathbf{q}) + \mathbf{\tau}_D
+\label{eq:dynamic equation}
+\intertext{where:}
+\begin{tabular}{>{$}l<{$} @{${}={}$} l}
+\mathbf{\tau} & input torque vector \\
+\mathbf{M}(\mathbf{q}) & inertia matrix\\
+\mathbf{v}(\mathbf{q}, \mathbf{\dot{q}}) & centrifugal/corriolis vector\\
+\mathbf{g}(\mathbf{q}) & gravitation vector\\
+\mathbf{\tau}_D & disturbance vector
+\end{tabular}\nonumber
+\end{gather}
+
+With the concept from Lagrange the dynamic equation of this system can be calculated:
+\begin{align*}
+\tau &= \input{equations/planar_robot_M}\left(\begin{array}{c}
+\ddot{q}_1\\ \ddot{q}_2
+\end{array}\right) \\
+&+ \input{equations/planar_robot_V}\\
+&+ \input{equations/planar_robot_G}
+\end{align*}
+
+
+\section{Simulation of the robot dynamics}
+
+To check if the previous derived dynamic equations are reasonable, some basic simulations can be performed. In these simulations the robot arm will be taken into some specific initial conditions and the behavior will be simulated without any external force applied to the system.\\
+There are three different initial conditions chosen. The first one is the robot arm points down and it rests in its stable equilibrium state. The next one is keeping the robot in its unstable equilibrium by pointing straight up. The last initial condition is an arbitrary setup, outside of the previous given equilibrium states.\\
+In figure \ref{fig:stable} it can be seen that the robot arm is staying at rest and does not start to move. On one joint there can be some minor oscillation seen, which can be explained by the numerical error of the simulation.
+\begin{figure}[]
+	\centering
+	\includegraphics[width=0.60\textwidth]{pics/SimulationinstableEquilibrium.png}\\
+	\caption{Simulation with initial condition in stable equilibrium}
+	\label{fig:stable}
+\end{figure}
+
+The next simulation can be seen in figure \ref{fig:unstable}, here the initial condition of the robot arm was within the unstable equilibrium. Theoretically the robot will stay at rest within this state, unfortunately by some numerical error, caused by the simulation, the robot arm starts to move after around 7 seconds and continuous to swing with some chaotic pattern. Since the numerical error within the system gets integrated over time and there is no friction within the system, the movement of the robot is not expected to stop in anytime.
+\begin{figure}[]
+	\centering
+	\includegraphics[width=0.60\textwidth]{pics/SimulationinunstableEquilibrium.png}\\
+	\caption{Simulation with initial condition in unstable equilibrium}
+	\label{fig:unstable}
+\end{figure}
+
+The last simulation is the initial condition outside of any equilibrium and the movement of all joints are expected to take place immediately; in comparison to the last simulation, which take 7 seconds to start moving visibly. The results of the simulation can seen in figure \ref{fig:outside}. The joints move in a chaotic way, as it has been expected.
+\begin{figure}[]
+	\centering
+	\includegraphics[width=0.60\textwidth]{pics/Simulationoutsideofanyequilibrium.png}\\
+	\caption{Simulation with initial condition outside of any equilibrium}
+	\label{fig:outside}
+\end{figure}
+
+All results of the simulations show expected behavior and we can assume that the model, which has been used, is correct.

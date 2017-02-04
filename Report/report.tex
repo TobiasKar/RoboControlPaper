@@ -1,3 +1,4 @@
+\RequirePackage{luatex85}
 \documentclass[12pt, bibliography=totoc, listof=totoc, svgnames]{scrreprt} 	% Beginn Dokument
 \usepackage{cite}				% Fürs Zitieren
 \usepackage[utf8]{inputenc} 	% Verwendete ASCII Codierung für ä ö ü
@@ -33,7 +34,7 @@
 \pagestyle{fancy} % options: empty , plain , fancy
 \fancypagestyle{plain}{}% damit auch "plain" Seiten fancy werden
 \renewcommand{\headrulewidth}{1pt} % customise the layout…
-\lhead{\textsc{Fault Detection and Isolation with Sliding Mode Observers}\\
+\lhead{\textsc{Robot Control Report}\\
 %\emph{\leftmark}
 }\chead{}\rhead{}
 \lfoot{}\cfoot{}\rfoot{\thepage}
@@ -43,10 +44,7 @@
 %%% HRule erzeugt eine Linie nach einem Absatz %%%
 \newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
 
-%%% Standard Titelblatt Einstellungen %%%
-%\title{Bachelorarbeit}
-%\author{\small{Sevim Eda}}
-%\date{\today}% 
+
 
 \usepackage{tabularx}
 \usepackage{amsmath}
@@ -60,14 +58,14 @@
 %\maketitle
 
 \include{title}
-%\tableofcontents
-%\renewcommand{\thepage}{\Roman{page}} \setcounter{page}{1}
+\tableofcontents
+\renewcommand{\thepage}{\Roman{page}} \setcounter{page}{1}
 %\include{abstract}
-%\listoffigures
+\listoffigures
 %\listoftables
 %\include{acronym}
-%\renewcommand{\chaptermark}[1]{\markboth{\thechapter.\ #1}{}}
-\include{Introduction}
+\renewcommand{\chaptermark}[1]{\markboth{\thechapter.\ #1}{}}
+\include{chapter1}
 %\include{Theory}
 %\include{Identification}
 %\include{Analysis}
