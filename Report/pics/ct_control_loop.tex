@@ -1,0 +1,47 @@
+\begin{tikzpicture}[M/.style={draw,outer sep=0pt,thick}]
+
+	\node [M,thick,minimum width=2.5cm,minimum height=2cm] (plant) at (0,0) {Robot};
+	\node [M,thick,minimum width=1cm,minimum height=1cm] (inertia) at (-4,0) {$\mathbf{M}$};
+	% \node [M,thick,minimum width=2.5cm,minimum height=1.5cm] (cont2) at (0,-2.5) {$C_2(s)$};
+	\node [M, circle] (add1) at ($(plant.west) + (-1,0)$) {};
+	\node [M, circle] (add2) at ($(inertia.west) + (-1,0)$) {};
+	\node at ($(add2.south east) + (0.2, -0.2)$) {$-$};
+	\node [circle] (out1) at ($(plant.east) + (1.0, 0.5)$) {};
+	\node [circle] (out2) at ($(plant.east) + (1.5, -0.5)$) {};
+	
+	\node [M,thick,minimum width=1cm,minimum height=1cm] (cogr) at ($(add1.south) + (0, -1)$) {$\mathbf{n}$};
+	\node [M,thick,minimum width=1cm,minimum height=1cm] (lincont) at ($(inertia.south |- cogr.south) + (0, -1)$) {$\mathbf{u}$};
+	
+	\node [circle] (split1) at ($(cogr.south) + (0.25, -0.8)$) {};
+	\node [circle] (split2) at ($(cogr.south) + (-0.25, -1.2)$) {};
+	
+	\draw [latex-, thick] (plant.west) -- (add1.east);
+	\draw [thick, -latex] ($(plant.east) + (0, 0.5)$) -- node [above] {$\mathbf{q}$} (out1.east) -- ($(out1.east) + (0.6,0)$);
+	\draw [thick, -latex] ($(plant.east) + (0, -0.5)$) -- node [above] {$\dot{\mathbf{q}}$} (out2.east) -- ($(out2.east) + (0.1,0)$);
+	\draw [-latex, thick] (cogr.north) -- (add1.south);
+	% \draw [-latex, thick] (out.west) -- ++(1, 0);
+	% \draw [thick] ($(out) + (0,0)$) -- (out |- cont2) -- (cont2.east)[-latex];
+	% \draw [thick] (cont2.west) -- (add |- cont2) -- (add.south)[-latex];
+	\draw [latex-, thick] (add2.west) -- node [above] {$\ddot{\mathbf{q}}_D$} ++(-1, 0);
+	\draw [-latex, thick] (add2.east) -- (inertia.west);
+	\draw [-latex, thick] (inertia.east) -- (add1.west);
+	\draw [-latex, thick] (lincont.west) -| (add2.south);
+	\draw [-latex, thick] ($(out1)+(0,0)$) |- ($(split1)+(0,0)$) -- ($(cogr.south) + (0.25, 0)$);
+	\draw [-latex, thick] ($(out2)+(0,0)$) |- ($(split2)+(0,0)$) -- ($(cogr.south) + (-0.25, 0)$);
+	\draw [-latex, thick] ($(split1)+(0,0)$) -- ($(lincont.east) + (0, 0.2)$);
+	\draw [-latex, thick] ($(split2)+(0,0)$) -- ($(lincont.east) + (0, -0.2)$);
+	\draw [-latex, thick] ($(out1)+(0,0)$) -- ++(0, 1.2) -| (inertia.north);
+	\draw [-latex, thick] ($(lincont.south) - (0, 1)$) -- node [right] {$\mathbf{q}_D$, $\mathbf{\dot{q}}_D$} (lincont.south);
+	
+	\fill (out1) circle [radius=1.5pt];
+	\fill (out2) circle [radius=1.5pt];
+	\fill (split1) circle [radius=1.5pt];
+	\fill (split2) circle [radius=1.5pt];
+	
+	\node (Dash) at (inertia.west) [draw, dashed,xshift =1.4cm,yshift=-0.6cm,minimum width=3cm,minimum height=2.8cm] {};
+	\node at ($(Dash.north) + (0.2,0.5)$) {feedforward};
+	\node at ($(Dash.north) + (0.2,0.2)$) {controller};
+	\node at ($(lincont.south) + (-1.4,-0.2)$) {linear outer};
+	\node at ($(lincont.south) + (-1.4,-0.6)$) {loop controller};
+	
+\end{tikzpicture}

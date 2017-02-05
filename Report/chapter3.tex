@@ -1,0 +1,186 @@
+\chapter{ Computed Torque like controllers}
+
+The previous chapter did present some implementations of computed controllers. Those controllers are relying on a reasonable model of the robot and if the robot's dynamics are changed, the controllers start to perform worse. More over the robot's dynamics do include a lot of terms where the deduction of a mathematical description is a hard task e.g. friction models. \\ 
+Now a type of controllers are presented, which are a simplified version of the real computed torque controllers. Those controllers do not take the complete system dynamics of the robot into consideration, the only take a small portion of it and linearize the model with this term. 
+
+\section{PD controller with gravity compensation}
+
+For this computed torque like controller the inertial and the centrifugal/coriolis term of the robot dynamics are neglected, only leaving the gravitational term. This leaves for the control law only the term:
+
+\begin{equation*}
+\tau_c = -\mathbf{u} + \mathbf{g}(\mathbf{q})
+\end{equation*}
+
+The control scheme is given in figure \ref{fig:ctLike_overview}
+\begin{figure}[]
+	\centering
+	\includegraphics[width=0.65\textwidth]{pics/ct_controller.png}\\
+	\caption{Controller overview of Computed Torque like controller with gravity compensation}
+	\label{fig:ctLike_overview}
+\end{figure}
+
+The controller is designed similar to the Computed Torque PD-Controller, with a coefficient comparison of the characteristic polynomial. For the damping a critical damping is required and for the frequency of the system $\omega_n$ two different values are chosen, 100 ${rad \over s}$ and 10 ${rad \over s}$.\\
+Figure \ref{fig:ctLike_pd1} shows the simulation with 100${rad \over s}$. The system reaches zero steady-state error within 0.2seconds. Therefore the initial torque has a peak of around 1kNm, which is in a range, where it is unreasonable to use motors, which are supporting this high torque. \\
+In comparison the controller with $\omega_n = 10 {rad \over s} $ which is shown in figure \ref{fig:ctLike_pd2} does show reasonable values for the torque. The torques needed for this controller oscillate around 30Nm/10Nm with an amplitude of 20Nm/10Nm.\\
+Although a lot of system components have not been used for the controller design, the controller show reasonable results, which are accurate enough for the most real world tasks.
+
+\begin{figure}[]
+	\centering
+	\includegraphics[width=0.85\textwidth]{pics/Controllerwithgravitationalcompensation(aggressive).png}\\
+	\caption{Aggressive Computed Torque like controller with gravitational compensation}
+	\label{fig:ctLike_pd1}
+\end{figure}
+
+\begin{figure}[]
+	\centering
+	\includegraphics[width=0.85\textwidth]{pics/Controllerwithgravitationalcompensation(moderate).png}\\
+	\caption{Moderate Computed Torque like controller with gravitational compensation}
+	\label{fig:ctLike_pd2}
+\end{figure}
+
+\section{Classical PD Joint Control}
+
+The concept of classical joint controller further simplifies the model and even removes the gravitational model from the system. So the control law is given by:
+\begin{equation*}
+	\tau_c = -\mathbf{u}
+\end{equation*}
+The controller consists of two decoupled controller, one for each joint, they do not share any information or states, which might affect each offer. This approach is useful if the motor of robot arm uses a high gear ratio, since the gear reduces the influence of the non linear parts of the system. For motors with a high gear ration the problem from controlling a robot arm shifts to the controlling of the motor, which is easier to accomplish, since the motor itself is not changed, if the arm has some unknown disturbance.\\
+For the controller design of the the PD-Controller a general second order polynomial is used. Again, critical damping is assumed during the controller design. The last free parameter $\omega_n$ is varied over different simulations. The used set of parameters is given in the following table:\\[1cm]
+
+\begin{table*}[h]
+	\begin{center}
+		
+		\label{tab:ch3_pd}
+		\begin{tabular}{llll}
+			& & & According \\
+			& $k_{p,i}$ & $k_{d,i}$ & Figure \\
+			\midrule
+			$\omega_n = 10\,\mathrm{\frac{rad}{s}}$: & 100 & 20 & \ref{fig:ch3_sim21} \\
+			$\omega_n = 25\,\mathrm{\frac{rad}{s}}$: & 625 & 50 & \ref{fig:ch3_sim22} \\
+			$\omega_n = 50\,\mathrm{\frac{rad}{s}}$: & 2500 & 100 & \ref{fig:ch3_sim23} \\
+			\bottomrule
+		\end{tabular}
+	\caption{Controller parameters for simulations witch classical PD controller}
+	\end{center}
+\end{table*}
+
+The first simulation, figure \ref{fig:ch3_sim21}, show the results with $\omega_n$ = 10. Here the error of the joints is relatively large. This huge error is caused by absence of he gravity within the design process. Therefore the torques of the joints do not show any peak.\\
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.85\textwidth]{pics/ClassicalJointPDControlParameterSet1.png}\\
+	\caption{Classical PD Joint Control $\omega_n$ = 10}
+	\label{fig:ch3_sim21}
+\end{figure}
+
+The next parameter set, figure \ref{fig:ch3_sim22}, does provide way less position error of the axes. Although the torques do have peaks at the beginning of around 60 Nm. After the initial peak the values of the torque decreases to same level as the previous simulation.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.85\textwidth]{pics/ClassicalJointPDControlParameterSet2.png}\\
+	\caption{Classical PD Joint Control $\omega_n$ = 25}
+	\label{fig:ch3_sim22}
+\end{figure}
+
+The last simulation uses the highest gains. Here an even higher peak torque is expected in comparison to the previous simulation. This expectation is valid, if the results from the last simulation is observed \ref{fig:ch3_sim23}. The initial peak of the torque is around 250Nm. But this controller provides with its more aggressive parameter set an even more accurate tracking of the reference and the position error is reduced to arounf 0.01rads.
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.85\textwidth]{pics/ClassicalJointPDControlParameterSet3.png}\\
+\caption{Classical PD Joint Control $\omega_n$ = 50}
+	\label{fig:ch3_sim23}
+\end{figure}
+
+
+\section{Classical PID Joint control}
+
+All controllers from the previous section are not able to reach a steady-state error of zero. All controllers have an error unequal to zero even after longer time. This can be explained with the absence of the gravitational force within the design process. Anyway this errors, can be reduced taken into consideration and an integrator can be added to the controller. This integrator is able to take care of the gravitational term and compensate it.\\
+
+By taking the characteristic polynomial of this controller:
+\begin{equation*}
+\Delta(s) = J_i s^3 + (B_i + k_{d,i}) s^2 +  k_{p,i} s + k_{i,i}
+\end{equation*}
+
+To find the stability region for the controller parameters, the Routh-Hurwitz stability criterion is applied.
+\begin{gather*}
+\begin{tabular}{>{$}c<{$}>{$}c<{$}>{$}c<{$}}
+J & k_{p} & 0 \\
+B + k_{d} & k_{i} & 0\\
+\dfrac{(B + k_{d})k_{p}-J k_{i}}{B_i + k_{d}} & 0 & 0\\
+k_{i} & 0 & 0
+\end{tabular}
+\end{gather*}
+
+Since the inertia is always positive the following conditions have to be fulfilled so that the closed loop controller is stable.
+\begin{align*}
+B + k_{d} &> 0\\
+k_{i} &> 0\\
+(B + k_{d})\frac{k_{p}}{J} &> k_{i}
+\end{align*}
+
+This controller is used with 3 different set of gains. First with some moderate controller gains, second some aggressive controller gains and last the aggressive controller with some saturation within the torque. The saturation is simulated to match a real world hardware better, which is not able to supply infinite values of torque. The overview over the parameters is given within the next table:
+\begin{table}[h]
+	\begin{center}
+		
+		\begin{tabular}{lllll}
+			& & & & According \\
+			& $k_{p}$ & $k_{d}$ & saturation & Figure \\
+			\midrule
+			$\omega_n = 10\,\mathrm{\frac{rad}{s}}$: & 300 & 30 & $\pm\infty\,\mathrm{N\,m}$ & \ref{fig:ch3_sim31} \\
+			$\omega_n = 50\,\mathrm{\frac{rad}{s}}$: & 2540 & 100.4 & $\pm\infty\,\mathrm{N\,m}$ & \ref{fig:ch3_sim32} \\
+			$\omega_n = 50\,\mathrm{\frac{rad}{s}}$: & 2540 & 100.4 & $\pm 35\,\mathrm{N\,m}$ &  \ref{fig:ch3_sim33}\\
+			\bottomrule
+		\end{tabular}
+	\caption{Controller parameters for simulations witch classical PID controller}
+	\end{center}
+\end{table}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.85\textwidth]{pics/ClassicalJointPIDControlParameterSet1.png}\\
+	\caption{Classical PD Joint Control $\omega_n$ = 10}
+	\label{fig:ch3_sim31}
+\end{figure}
+
+In figure \ref{fig:ch3_sim31} the simulation with the moderate parameter set can be seen. Here the constant offset of the error has been removed and the error oscillates around zero. Although the amplitude of the error is rather high with 0.1rads.
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.85\textwidth]{pics/ClassicalJointPIDControlParameterSet2.png}\\
+	\caption{Classical PID Joint Control $\omega_n$ = 50}
+	\label{fig:ch3_sim32}
+\end{figure}
+
+In the next simulation which can be seen within figure \ref{fig:ch3_sim32} the dynamics of the error are greatly improved in comparison to the previous simulation. This can be explained by the way more aggressive parameter set. The drawback of this parameter set is the high initial peak within the torque. The max value of the torque is around 250Nm. Which makes this controller not really suitable for a real world implementation.
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.85\textwidth]{pics/ClassicalJointPIDControlParameterSet3.png}\\
+	\caption{Classical PID Joint Control $\omega_n$ = 50 with saturation}
+	\label{fig:ch3_sim33}
+\end{figure}
+The last simulation of the PID joint controllers, will utilize the previous parameter set, which has shown suitable system dynamics, although it has high torque peaks. This simulation will saturate the torque signal at $\pm$35Nm. The saturation is clearly visible within the simulation results. Comparing the error dynamics of the last simulation with the error from the previous one, there is almost no difference visible. So it can be said that the PID joint control is a suitable method for the control of a robot arm. The saturation itself does not provide any drawback and is usually automatically implemented within the motor driver.
+
+\chapter{ Practical issues at the realisation of robot control}
+
+ When a controller for a robot needs to be implemented often a digital controller is needed. For the design of a discrete CT Controller the dynamics of the robot needs to be discretized, which leads to a very complicated system description and a even more complicated controller design. Since the CT Controller is a non-linear one, you cannot just discretize the controller and expect the same result. The only reasonable method is to use the discretized version of the CT controller as an approximation. For the following simulation and discretized version of a computed torque PD-controller will be used in a digital implementation. The robot arm itself will be still simulated with a variable step solver to contain the continuous behavior of the robot. The real world robot model is also a continuous one, so the behavior of the controller can be simulated within a good framework.\\
+ The parameter of the controller will be the same as the computed torque PD-Controller with critical damping \ref{fig:ct_pd1}. For this simulation the sampling time of the controller will be changed from  1ms, 50ms and 100ms. The rest of the simulation model will run with a variable step solver.
+ 
+ \begin{figure}[h]
+ 	\centering
+ 	\includegraphics[width=0.85\textwidth]{pics/ComputedTorquePD-Controllerwith1msSamplingTime.png}\\
+ 	\caption{Discrete CT-PD Controller with $T_s$ = 1ms}
+ 	\label{fig:ch3_digi1}
+ \end{figure}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.85\textwidth]{pics/ComputedTorquePD-Controllerwith50msSamplingTime.png}\\
+	\caption{Discrete CT-PD Controller with $T_s$ = 50ms}
+	\label{fig:ch3_digi2}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.85\textwidth]{pics/ComputedTorquePD-Controllerwith100msSamplingTime.png}\\
+	\caption{Discrete CT-PD Controller with $T_s$ = 100ms}
+	\label{fig:ch3_digi3}
+\end{figure}
+ 
