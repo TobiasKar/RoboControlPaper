@@ -1,0 +1,46 @@
+\chapter{ Sliding Mode controller}
+
+The idea behind sliding mode is to force the states of a system to a so called sliding manifold and let it slide along this surface to the origin. When the states are on the surface the system show reduced order dynamics. To keep the system on the manifold a high frequency switching signal is needed. This can be obtained easily with a sign. As this would need to infinite fast switching , which cannot be realized, a boundary layer is introduced. This layer is achieved by using, instead of sign-function, another function like tanh.\\
+To stabilize the error system of the robot arm the following sliding manifold is used:
+\begin{gather*}
+\mathbf{s} = \dot{\mathbf{e}} + \Lambda \mathbf{e}
+\intertext{where:}
+\begin{tabular}{>{$}l<{$} @{${}:{}$} l}
+	\Lambda & diagonal matrix with time constants of the systems, when in sliding mode
+\end{tabular}\nonumber
+\end{gather*}
+
+This system corresponds to a first order differential equation. To be stable the eigenvalues of this system needs to be negative. To control the robot the following control law is used:
+\begin{gather*}
+\tau_c = \hat{\mathbf{M}}\ddot{\mathbf{q}}_s + \hat{\mathbf{V}}_m \dot{\mathbf{q}}_s + \hat{\mathbf{g}} + \mathbf{K} sign(\mathbf{s})
+\intertext{where:}
+\begin{tabular}{>{$}l<{$} @{${}:{}$} l}
+\hat{\mathbf{M}} & estimated inertia matrix\\
+\hat{\mathbf{V}}_m & estimated centrifugal/coriolis matrix\\
+\dot{\mathbf{q}}_s & $\Lambda \mathbf{e} + \mathbf{\dot{q}}_D$\\
+\hat{\mathbf{g}} & estimated gravitation vector\\
+\mathbf{K} & diagonal matrix with gains
+\end{tabular}\nonumber
+\end{gather*}
+
+The parameter $\mathbf{K}$ is used to compensate for the unknown or unmodelled dynamics. The better the model is the smaller this parameter can be chosen.
+For the simulation following parameter sets have been chosen: 
+\begin{table}[h]
+	\begin{center}
+		\label{tab:smo}
+		\begin{tabular}{lllll}
+			&     &							 &Switching& According          \\
+			$\lambda$ & $k$ &$\hat{\mathbf{g}}$&Function& Figure             \\
+			\midrule
+			10    & 20 &$0.75\mathbf{g}  $& sign(s)& \ref{fig:ch5_smo1} \\
+			10    & 10 &$0.75\mathbf{g}  $& sign(s)& \ref{fig:ch5_smo2} \\
+			25    & 20 &$0.75\mathbf{g}  $& sign(s)& \ref{fig:ch5_smo3} \\
+			10    & 20 &$0\mathbf{g}  $& sign(s)& \ref{fig:ch5_smo4} \\
+			10    & 30 &$0\mathbf{g}  $& sign(s)& \ref{fig:ch5_smo5} \\
+			10    & 20 &$0\mathbf{g}  $& tanh(s)& \ref{fig:ch5_smo6} \\
+			10    & 40 &$0\mathbf{g}  $& tanh(5s)& \ref{fig:ch5_smo7} \\
+			\bottomrule
+		\end{tabular}
+		\caption{Controller parameters for simulations with sliding mode controller}
+	\end{center}
+\end{table}

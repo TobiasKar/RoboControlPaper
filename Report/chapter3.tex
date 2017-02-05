@@ -170,13 +170,14 @@ The last simulation of the PID joint controllers, will utilize the previous para
  	\label{fig:ch3_digi1}
  \end{figure}
 
+The first simulation, which can be seen in figure \ref{fig:ch3_digi1}, show about the same behavior as the continuous implementation. 
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=0.85\textwidth]{pics/ComputedTorquePD-Controllerwith50msSamplingTime.png}\\
 	\caption{Discrete CT-PD Controller with $T_s$ = 50ms}
 	\label{fig:ch3_digi2}
 \end{figure}
-
+ The next simulation with a sampling time of 50ms, figure \ref{fig:ch3_digi2}, starts to show some differences to the continuous implementation. The error signal has some minor oscillations. All of the are still pretty small and neglect-able for the most application. 
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=0.85\textwidth]{pics/ComputedTorquePD-Controllerwith100msSamplingTime.png}\\
@@ -184,3 +185,4 @@ The last simulation of the PID joint controllers, will utilize the previous para
 	\label{fig:ch3_digi3}
 \end{figure}
  
+ If the sample time of the controller is further increased the controller starts to be unstable. This can be seen in figure \ref{fig:ch3_digi3}. Here the controller itself is too slow to react on any changes of the model. Until the controller is calculated again the model has already moved so far, that the control action needs to be inverted. This leads to an oscillation with increasing amplitude.
