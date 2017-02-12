@@ -44,3 +44,63 @@ For the simulation following parameter sets have been chosen:
 		\caption{Controller parameters for simulations with sliding mode controller}
 	\end{center}
 \end{table}
+
+In figure \ref{fig:ch5_smo1} it can be seen that the error converges after 0.5 to 1 second. The torques show the typical high frequency switching of the sliding mode control law.
+
+\begin{figure}[]
+	\centering
+	\includegraphics[width=0.85\textwidth]{pics/SlidingModeControllerParameterSet1.png}\\
+	\caption{Sliding Mode Controller with $\lambda = 10, k=20,\hat{\mathbf{g}}=0.75\mathbf{g}$  }
+	\label{fig:ch5_smo1}
+\end{figure}
+
+The simulation, which can be seen in figure \ref{fig:ch5_smo2}, has the linear gain of the switching function reduced, compared to the previous simulation. The result of the less aggressive controller, can be seen in the convergence time of the error, which is about twice the time compared to the previous parameter set. The values of the torques are also reduced, since the controller does react less aggressive.
+
+\begin{figure}[]
+	\centering
+	\includegraphics[width=0.85\textwidth]{pics/SlidingModeControllerParameterSet2.png}\\
+	\caption{Sliding Mode Controller with $\lambda = 10, k=10,\hat{\mathbf{g}}=0.75\mathbf{g}$  }
+	\label{fig:ch5_smo2}
+\end{figure}
+
+In figure \ref{fig:ch5_smo3} the simulation results are shown for a controller with increased values $\lambda$. The time to drive the error to zero is even more increased, compared to the previous simulations.
+\begin{figure}[]
+	\centering
+	\includegraphics[width=0.85\textwidth]{pics/SlidingModeControllerParameterSet3.png}\\
+	\caption{Sliding Mode Controller with $\lambda = 25, k=20,\hat{\mathbf{g}}=0.75\mathbf{g}$  }
+	\label{fig:ch5_smo3}
+\end{figure}
+
+The next two simulation will show the results, if the gravitational component in the controller is ignored. The results in \ref{fig:ch5_smo4}  show that the error of the first joint does not converge anymore.
+\begin{figure}[]
+	\centering
+	\includegraphics[width=0.85\textwidth]{pics/SlidingModeControllerParameterSet4.png}\\
+	\caption{Sliding Mode Controller with $\lambda = 10, k=20,\hat{\mathbf{g}}=0\mathbf{g}$  }
+	\label{fig:ch5_smo4}
+\end{figure}
+
+The next simulation has no gravitational term within the controller, although the parameters are tuned for an optimal behavior, which lead to $\lambda = 10, k=30 $. It can be seen that the controller is able to drive the error to zero after 3 seconds.
+
+\begin{figure}[]
+	\centering
+	\includegraphics[width=0.85\textwidth]{pics/SlidingModeControllerParameterSet5.png}\\
+	\caption{Sliding Mode Controller with $\lambda = 10, k=30,\hat{\mathbf{g}}=0\mathbf{g}$  }
+	\label{fig:ch5_smo5}
+\end{figure}
+
+To check the influence of the switching function itself the following two simulations have been done with a non-ideal switching function, which introduces a boundary layer around the switching manifold. In this case the $tanh$ function has been used. In figure \ref{fig:ch5_smo6} it can be seen that the asymptotically stability of the error function did disappear and some oscillations can be seen. Therefore the torque itself does not show any high frequency switching anymore.
+\begin{figure}[]
+	\centering
+	\includegraphics[width=0.85\textwidth]{pics/BoundaryLayerSlidingModeControllerParameterSet1.png}\\
+	\caption{Boundary Layer Sliding Mode Controller with $\lambda = 10, k=20,\hat{\mathbf{g}}=0\mathbf{g}$  }
+	\label{fig:ch5_smo6}
+\end{figure}
+
+In figure \ref{fig:ch5_smo7} the results can be seen with a more aggressive switching function by scaling the sliding function itself, this leads to a narrower boundary layer around the switching manifold. The torque values still do not show the high frequency switching, but the convergence of the error shows better behavior and is almost asymptotically stable.
+
+\begin{figure}[]
+	\centering
+	\includegraphics[width=0.85\textwidth]{pics/BoundaryLayerSlidingModeControllerParameterSet2.png}\\
+	\caption{Boundary Layer Sliding Mode Controller with $\lambda = 10, k=40,\hat{\mathbf{g}}=0\mathbf{g}$  }
+	\label{fig:ch5_smo7}
+\end{figure}
