@@ -1,0 +1,41 @@
+\renewcommand{\thepage}{\arabic{page}} \setcounter{page}{1}
+
+\chapter{Control Behavior of CT-Controllers}
+
+This chapter will evaluate the behavior of the CT-Controller in regards to its error dynamics and will explain, why this behavior is expected.
+
+
+Since the concept behind the CT-Controllers can be summarized to: Linearize the system to obtain a double integrator and control this one, the double integrating system will be taken into consideration.
+
+\begin{equation*}
+\left(\begin{array}{c}
+\dot{\mathbf{e}} \\ \ddot{\mathbf{e}}
+\end{array}\right) = \left(\begin{array}{cc}
+\mathbf{0} & \mathbf{I} \\
+\mathbf{0} & \mathbf{0} 
+\end{array}\right) \left(\begin{array}{c}
+\mathbf{e} \\ \dot{\mathbf{e}}
+\end{array}\right) + \left(\begin{array}{c}
+\mathbf{0} \\ \mathbf{I}
+\end{array}\right) \mathbf{u}
+\end{equation*}
+
+This system is describing the error dynamics. All other model parts of the model have been removed from the control task by the usage of the computed torque controller. Since the controller is only simulated and the model is taken to be perfect, the usage of the computed torque controller does not provide any disadvantages in regard to control performance.
+
+If the system itself, so without its input, is analyzed, it can be seen, that the error dynamics have a double pole within the origin. By using the controller with critical damping, the parameters $k_p = 100$ and $k_d = 20$ are obtained. Using this parameters the poles of the error system are shifted to:
+
+\begin{equation*}
+\text{eig} \left( \mathbf{A} - \mathbf{ k B} \right) = \text{eig} \left(
+\left( \begin{array}{cc}0 & 1 \\ 0 & 0\end{array} \right) -
+\left( \begin{array}{cc } k_p & k_d \end{array} \right) \left( \begin{array}{c} 0\\1 \end{array} \right) \right)  = \left( \begin{array}{c} -0.5 \\ -39.5 \end{array} \right)
+\end{equation*}
+
+This eigenvalue are showing that the error system is asymptotically stable and will drive the error and its derivation to zero. So it can be said by using the a proper set of gains the error of the system will always approach zero.
+
+The initial position errors can explained by two points:
+\begin{itemize}
+	\item The seconds joint's reference is a cosine signal, therefore the initial error cannot be zero.
+	\item The velocity of the joint has to be taken into account. The velocity error itself has not been displayed in the report. Since the double integrator has to states, which the controller should drive to zero, the position error will show an amplitude, even though the initial position error might be zero. 
+\end{itemize} 
+
+The controller which is used here consists only of a proportional and a differentiating term. This type of controller is prone to distortions and does not provide a specific robustness against these distortions. If the simulations are done with some un-modeled distortions e.g. a constant additional torque in each joint. This needed robustness can only be created by an integrating term within the controller.
